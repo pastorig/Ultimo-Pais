@@ -63,9 +63,7 @@ body {
 #app, #fx { position: relative; z-index: 1; }
 .wrap { max-width: 640px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
 .stack { display: flex; flex-direction: column; gap: 16px; }
-.enter > :not(.turn) { animation: rise .55s cubic-bezier(.2, .8, .2, 1) both; }
-.enter > :nth-child(2) { animation-delay: .07s; } .enter > :nth-child(3) { animation-delay: .14s; }
-.enter > :nth-child(4) { animation-delay: .21s; } .enter > :nth-child(5) { animation-delay: .28s; } .enter > :nth-child(6) { animation-delay: .35s; }
+.enter :is(.panel, .board, .react):not(.turn) { animation: rise .55s cubic-bezier(.2, .8, .2, 1) both; }
 @keyframes rise { from { opacity: 0; transform: translateY(22px) scale(.98); } to { opacity: 1; transform: none; } }
 
 p { margin: 0; }
@@ -154,7 +152,11 @@ input[type="text"]:focus-visible { outline: none; border-color: var(--amber); bo
 .empty { text-align: center; padding: 20px 10px; border: 2px dashed var(--line-2); border-radius: 14px; }
 
 /* Reglas */
-.tiles { display: grid; grid-template-columns: 1fr; gap: 12px; }
+.tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.tile.st { grid-column: 1 / -1; flex-direction: row; align-items: center; justify-content: space-between; gap: 12px; }
+.tile.st .stepper { margin-top: 0; flex: none; gap: 8px; }
+.tile.sw .hint { display: none; }
+.tile.sw { gap: 8px; }
 .tile { background: #070C19; border: 1px solid var(--line); border-radius: 14px; padding: 14px 14px 14px 18px; display: flex; flex-direction: column; gap: 10px; position: relative; overflow: hidden; }
 .tile::before { content: ""; position: absolute; inset: 0 auto 0 0; width: 5px; background: var(--tc); }
 .tile .tn { font-weight: 700; line-height: 1.2; }
@@ -379,7 +381,83 @@ details ul { margin: 10px 0 0; padding-left: 20px; display: flex; flex-direction
   .flaps.big { --fw: 38px; }
   .qr { width: 116px; height: 116px; }
 }
-@media (min-width: 560px) { .tiles { grid-template-columns: repeat(3, 1fr); } .val { font-size: 34px; min-width: 50px; } }
+@media (min-width: 560px) { .tiles { grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); } .tile.st { grid-column: auto; flex-direction: column; align-items: stretch; } .tile.st .stepper { margin-top: auto; } .tile.sw .hint { display: block; } .val { font-size: 34px; min-width: 50px; } }
+.cols { display: flex; flex-direction: column; gap: 12px; }
+.colL, .colR { display: contents; }
+#board { order: 1; } #turn { order: 2; } #react { order: 3; } #sec-pl { order: 4; } #sec-used { order: 5; } #sec-log { order: 6; } #ctrl { order: 7; }
+.wrap { gap: 12px; } .stack { gap: 12px; }
+@media (max-width: 559px) {
+  body { padding-top: 10px; }
+  .tt { --w: clamp(26px, 9.8vw, 44px); }
+  .trow { gap: 4px; }
+  .hdr { gap: 6px; }
+  .flight { display: none; }
+  .hdr.compact .sub { display: none; }
+  .hdr.compact .title { flex-direction: row; gap: 10px; }
+  .hdr.compact .tt.plane { display: none; }
+  .hdr.compact .trow { gap: 3px; }
+  .hdr.compact .tt { --w: clamp(18px, 6.2vw, 28px); }
+  .panel { padding: 13px 12px; gap: 11px; border-radius: 16px; }
+  h2 { font-size: 22px; } h2::after { margin-top: 5px; height: 3px; width: 36px; }
+  .qr { display: none; }
+  .invite .grow { flex-basis: 100%; }
+  .pass .k, .pass .bars { display: none; }
+  .pass .stub { width: 52px; padding: 6px 2px; gap: 3px; }
+  .pass .stub .av { --s: 30px; }
+  .pass .main { flex-direction: row; flex-wrap: wrap; align-items: center; padding: 6px 8px 6px 12px; gap: 2px 8px; }
+  .pass .nm { font-size: 24px; flex: 1; min-width: 80px; }
+  .pass .acts { margin-left: 0; }
+  .pass .acts .btn { min-height: 32px; padding: 4px 7px; font-size: 13px; }
+  .plist { gap: 8px; }
+  .log li:nth-child(n+5) { display: none; }
+  .book { max-height: 230px; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 12px 8px; gap: 12px 8px; }
+  .stamp { min-width: 84px; padding: 6px 8px; } .stamp .fl { font-size: 22px; }
+  .board { padding: 12px; gap: 8px; } .rnum { font-size: 38px; }
+  .flaps.big { --fw: 34px; }
+  .turn .who { font-size: clamp(26px, 8.4vw, 36px); }
+  .slot { min-height: 52px; padding: 6px 8px; } .slot .fl { font-size: 26px; } .slot .num { font-size: 22px; }
+  .react button { min-height: 40px; font-size: 22px; }
+  .pstrip { gap: 10px; }
+  .pass .tag:not(.me) { display: none; }
+  .pass .meta { order: 3; } .pass .acts { order: 2; }
+  .invlink { display: none; }
+  .tile.st .hint { display: none; }
+  .tile.st .stepper .btn { width: 38px; min-height: 38px; font-size: 22px; }
+  .tile.st .val { font-size: 32px; min-width: 52px; }
+  .tile { padding: 10px 12px 10px 16px; }
+  .tile .tn { font-size: 15px; }
+  .cattile { padding: 12px 12px 12px 16px; margin-top: 10px; }
+  .cbtn { padding: 7px 9px; min-height: 34px; font-size: 11px; }
+}
+@media (min-width: 960px) {
+  body { padding-block: 26px 80px; padding-left: max(32px, env(safe-area-inset-left, 0px)); padding-right: max(32px, env(safe-area-inset-right, 0px)); }
+  .wrap { max-width: 1240px; gap: 22px; }
+  .stack { gap: 22px; }
+  .tt { --w: clamp(48px, 5.4vw, 84px); }
+  .hdr { flex-direction: row; flex-wrap: wrap; align-items: flex-end; gap: 12px 28px; }
+  .hdr .hbar { width: 100%; order: -1; }
+  .hdr .title { flex: none; }
+  .hdr .flight { display: none; }
+  .hdr .title { flex-direction: row; align-items: center; gap: 0; }
+  .hdr .title .trow:first-child { margin-right: 28px; }
+  .hdr .sub { flex: 1; min-width: 260px; font-size: 14px; padding-bottom: 8px; }
+  .cols { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 22px; align-items: start; }
+  .colL, .colR { display: flex; flex-direction: column; gap: 22px; min-width: 0; }
+  #board, #turn, #react, #sec-pl, #sec-used, #sec-log, #ctrl { order: 0; }
+  #view-playing .colR { position: sticky; top: 16px; }
+  .panel { padding: 22px; gap: 18px; }
+  h2 { font-size: 30px; }
+  .board { padding: 24px; }
+  .rnum { font-size: 64px; } .flaps.big { --fw: 56px; }
+  .turn .who { font-size: clamp(38px, 3.6vw, 56px); }
+  .slot { min-height: 78px; } .slot .sn { font-size: 17px; }
+  .pass .nm { font-size: 34px; }
+  .winner .wname { font-size: clamp(60px, 6vw, 96px); }
+  .btn.primary.big { min-height: 72px; font-size: 26px; }
+  input[type="text"] { font-size: 18px; padding: 15px 16px; }
+}
+@media (min-width: 1500px) { .wrap { max-width: 1400px; } }
+
 @media (min-width: 700px) { body { padding-top: 30px; } }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
@@ -3400,7 +3478,7 @@ function titleView() {
 }
 function headerView() {
   const phase = { lobby: 'Embarque', playing: 'En vuelo', over: 'Aterrizaje' }[S.phase];
-  return h('header', { class: 'hdr' },
+  return h('header', { class: 'hdr' + (S.phase === 'playing' ? ' compact' : '') },
     h('div', { class: 'hbar' }, h('span', { class: 'chip-st', text: phase }), standalone ? h('span', { class: 'room', text: 'Sala · ' + ROOM }) : null,
       h('span', { class: 'grow' }),
       h('button', { class: 'sound', 'aria-pressed': String(!muted), onclick: toggleMute, text: muted ? 'Sonido: no' : 'Sonido: sí' })),
@@ -3436,16 +3514,17 @@ function lobbyView() {
     : h('div', { class: 'empty', id: 'plist' }, h('p', { class: 'muted', text: 'Todavía no entró nadie. Cada persona abre el link desde su celular y escribe su nombre.' }));
   const cfg = S.config;
   const stepTile = (id, color, title, hint, valText, onMinus, onPlus, minusOff, plusOff) =>
-    h('div', { class: 'tile', id, style: `--tc:${color}` },
+    h('div', { class: 'tile st', id, style: `--tc:${color}` },
       h('div', {}, h('div', { class: 'tn', text: title }), h('div', { class: 'hint', text: hint })),
       h('div', { class: 'stepper' },
         h('button', { class: 'btn', 'aria-label': 'Menos ' + title, disabled: minusOff, onclick: onMinus }, '−'),
         h('span', { class: 'val', 'data-v': valText, text: valText }),
         h('button', { class: 'btn', 'aria-label': 'Más ' + title, disabled: plusOff, onclick: onPlus }, '+')));
-  const swTile = (id, color, title, hint, on, key, dis) => h('div', { class: 'tile', id, style: `--tc:${color}` },
+  const swTile = (id, color, title, hint, on, key, dis) => h('div', { class: 'tile sw', id, style: `--tc:${color}` },
     h('div', {}, h('div', { class: 'tn', text: title }), h('div', { class: 'hint', text: hint })),
     h('button', { class: 'switch', role: 'switch', 'aria-checked': String(!!on), 'aria-label': title, disabled: dis, onclick: () => actConfig(key, !cfg[key]) }));
-  return h('div', { class: 'stack', id: 'view-lobby' },
+  return h('div', { class: 'stack cols', id: 'view-lobby' },
+    h('div', { class: 'colL stack' },
     h('section', { class: 'panel', id: 'sec-players' },
       h('div', { class: 'ph' }, h('h2', { text: 'Pasajeros' }), h('span', { class: 'k', text: P.length + ' a bordo' })),
       joinForm, list,
@@ -3453,7 +3532,8 @@ function lobbyView() {
         h('input', { type: 'text', id: 'add-name', placeholder: 'Sumar a alguien sin celular', maxlength: '24', autocomplete: 'off',
           onkeydown: enterTo(() => { actAddManual(inputVal('add-name')); document.getElementById('add-name').value = ''; }) }),
         h('button', { class: 'btn', onclick: () => { actAddManual(inputVal('add-name')); document.getElementById('add-name').value = ''; } }, 'Sumar'))),
-    inviteView(),
+    inviteView()),
+    h('div', { class: 'colR stack' },
     h('section', { class: 'panel', id: 'sec-rules' },
       h('h2', { text: 'Reglas del vuelo' }),
       h('div', { class: 'tiles' },
@@ -3477,7 +3557,7 @@ function lobbyView() {
         h('li', { text: 'En tu turno tenés que decir la cantidad de países configurada antes de que se acabe el tiempo.' }),
         h('li', { text: 'Si decís un país que ya se dijo, no cuenta: probás con otro.' }),
         h('li', { text: 'La única forma de quedar afuera es que se acabe el tiempo sin haber dicho todos tus países.' }),
-        h('li', { text: 'Cuantos más países se dicen, menos quedan. Gana la última persona en pie.' }))));
+        h('li', { text: 'Cuantos más países se dicen, menos quedan. Gana la última persona en pie.' })))));
 }
 
 function rankingView() {
@@ -3574,7 +3654,7 @@ function gameView() {
     confirmAct === 'reset'
       ? [h('button', { class: 'btn danger solid', onclick: () => actReset() }, 'Sí, terminar partida'), h('button', { class: 'btn', onclick: () => { confirmAct = null; render(); } }, 'Cancelar')]
       : h('button', { class: 'btn ghost', onclick: () => { confirmAct = 'reset'; render(); } }, 'Terminar partida'));
-  return h('div', { class: 'stack enter', id: 'view-playing' }, board, turn, reactBar, players, used, log, ctrl);
+  return h('div', { class: 'stack enter cols', id: 'view-playing' }, h('div', { class: 'colL stack' }, board, used, log), h('div', { class: 'colR stack' }, turn, reactBar, players, ctrl));
 }
 function stampView(u) {
   const hs = hash(u.k);
@@ -3610,7 +3690,8 @@ function statsView() {
 }
 function overView() {
   const w = S.roster.find(p => p.id === S.winner);
-  return h('div', { class: 'stack enter', id: 'view-over' },
+  return h('div', { class: 'stack enter cols', id: 'view-over' },
+    h('div', { class: 'colL stack' },
     h('section', { class: 'panel winner', id: 'sec-win' },
       h('div', { html: CROWN, style: 'display:contents' }),
       w ? avatar(w.name, w.ci, 84) : null,
@@ -3622,11 +3703,12 @@ function overView() {
       h('button', { class: 'btn', id: 'lobby-btn', disabled: busy, onclick: () => actReset() }, 'Volver a la sala')),
     statsView(),
     podiumView(),
-    rankingView(),
+    rankingView()),
+    h('div', { class: 'colR stack' },
     h('section', { class: 'panel', id: 'sec-pl' }, h('h2', { text: 'Pasajeros' }), playerChips()),
     S.used.length ? h('section', { class: 'panel', id: 'sec-used' }, h('h2', { text: 'Pasaporte' }), h('div', { class: 'book' }, S.used.map(u => stampView(u)))) : null,
     h('section', { class: 'panel', id: 'sec-log' }, h('h2', { text: 'Cómo terminó' }),
-      h('ul', { class: 'log' }, S.log.slice(-12).reverse().map(l => h('li', { id: 'lg-' + l.i, class: l.k }, h('span', { class: 'r', text: 'R' + l.r }), l.t)))));
+      h('ul', { class: 'log' }, S.log.slice(-12).reverse().map(l => h('li', { id: 'lg-' + l.i, class: l.k }, h('span', { class: 'r', text: 'R' + l.r }), l.t))))));
 }
 
 function tickerView() {
