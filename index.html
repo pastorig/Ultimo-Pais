@@ -3517,7 +3517,17 @@ setInterval(tick, 400);
 
 /* ---------- Arranque ---------- */
 // Pegá acá la configuración de tu proyecto de Firebase (ver la pantalla de ayuda del juego).
-const FIREBASE_CONFIG = { apiKey: '', authDomain: '', databaseURL: '', projectId: '', appId: '' };
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyDhJWjwxWdROe7tZ8S_ftOCcObvjFssZXc",
+  authDomain: "ultimo-pais.firebaseapp.com",
+  databaseURL: "https://ultimo-pais-default-rtdb.firebaseio.com",
+  projectId: "ultimo-pais",
+  storageBucket: "ultimo-pais.firebasestorage.app",
+  messagingSenderId: "519616146776",
+  appId: "1:519616146776:web:993a69ca039d05b2cf892d",
+  measurementId: "G-Q4R68Y15LN"
+};
 
 function wireTyping(ref) {
   typingRef = ref;
