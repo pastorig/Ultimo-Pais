@@ -3088,7 +3088,11 @@ function pickLetter(s) {
   if (!s.config.letters || !s.config.validate) return;
   const used = new Set(s.used.map(u => u.k)), cnt = {};
   COUNTRIES.forEach(e => { if (!used.has(e.k) && catOk(s.cat, e.c)) { const l = letterOf(e); cnt[l] = (cnt[l] || 0) + 1; } });
-  const pool = Object.keys(cnt).filter(l => cnt[l] >= Math.max(2, s.config.perTurn));
+  // Solo letras con muchas opciones: al principio las más generosas, y nunca menos de 6 (o 3 por país pedido)
+  const thr = (s.round || 1) <= 2 ? 14 : Math.max(6, s.config.perTurn * 3);
+  const ls = Object.keys(cnt).sort((x, y) => cnt[y] - cnt[x]);
+  let pool = ls.filter(l => cnt[l] >= thr);
+  if (!pool.length) pool = ls.slice(0, 3).filter(l => cnt[l] >= Math.max(4, s.config.perTurn * 2));
   if (pool.length) s.letter = pool[Math.floor(Math.random() * pool.length)];
 }
 function nextTurn(s) {
