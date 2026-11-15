@@ -44,7 +44,7 @@ body {
 
 /* Fondo: noche de aeropuerto */
 #bgfx { position: fixed; inset: 0; overflow: hidden; pointer-events: none; z-index: 0;
-  background: radial-gradient(800px 460px at 100% -8%, rgba(255, 176, 0, .12), transparent 62%), radial-gradient(640px 480px at -12% 38%, rgba(53, 214, 230, .09), transparent 62%), linear-gradient(#05070D, #070C18); }
+  background: radial-gradient(800px 460px at 100% -8%, color-mix(in srgb, var(--bgc, #FFB000) 20%, transparent), transparent 62%), radial-gradient(640px 480px at -12% 38%, rgba(53, 214, 230, .09), transparent 62%), linear-gradient(#05070D, #070C18); }
 #bgfx::before { content: ""; position: absolute; left: -40%; right: -40%; bottom: -5%; height: 62%;
   background-image: linear-gradient(rgba(255, 255, 255, .06) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, .06) 1px, transparent 1px);
   background-size: 46px 46px; transform: perspective(520px) rotateX(62deg); transform-origin: center bottom;
@@ -479,6 +479,26 @@ details ul { margin: 10px 0 0; padding-left: 20px; display: flex; flex-direction
 .rcode { font-family: var(--f-board); font-weight: 900; font-size: 34px; letter-spacing: .12em; color: var(--cyan); line-height: 1; }
 .rjoin { display: flex; gap: 6px; flex: 1 1 100%; }
 .rjoin input { padding: 9px 12px; font-size: 16px; border-radius: 10px; }
+
+/* Pulido visual */
+.clock { gap: 4px; }
+.ringw { position: relative; width: 92px; height: 92px; display: grid; place-items: center; }
+.ringw svg { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); }
+.ringw .rt { fill: rgba(0, 0, 0, .35); stroke: rgba(255, 255, 255, .12); stroke-width: 7; }
+.ringw .ringp { fill: none; stroke: var(--pc, var(--amber)); stroke-width: 7; stroke-linecap: round; stroke-dasharray: 100; stroke-dashoffset: 0; transition: stroke-dashoffset .45s linear; filter: drop-shadow(0 0 5px var(--pc, var(--amber))); }
+.ringw .flaps { --fw: 25px; position: relative; }
+.turn.low .ringw .ringp { stroke: var(--red); filter: drop-shadow(0 0 6px var(--red)); }
+.map .arc { fill: none; stroke-width: 3.5; stroke-linecap: round; stroke-dasharray: 10 12; animation: dashf 1.4s linear infinite; opacity: .9; }
+@keyframes dashf { to { stroke-dashoffset: -44; } }
+.map .mlab { font-family: var(--f-board), Impact, sans-serif; font-weight: 900; font-size: 30px; letter-spacing: .04em; fill: #fff; stroke: #05070D; stroke-width: 7px; paint-order: stroke; stroke-linejoin: round; animation: rise .5s both; }
+.stamp.ghost { border-style: dashed; color: var(--muted); opacity: .45; animation: none; background: none; }
+.turn { background: radial-gradient(420px 200px at 0% 0%, color-mix(in srgb, var(--pc) 22%, transparent), transparent 70%), linear-gradient(var(--panel-2), var(--panel)) padding-box, conic-gradient(from var(--ang), var(--pc), transparent 28%, var(--pc) 55%, transparent 80%, var(--pc)) border-box; }
+.turn .av { animation: avglow 2.2s ease-in-out infinite alternate; }
+@keyframes avglow { to { box-shadow: 0 0 0 3px rgba(255, 255, 255, .15), 0 0 26px var(--pc); } }
+.panel h2 { text-shadow: 0 2px 14px rgba(0, 0, 0, .5); }
+.btn:active { transform: scale(.97); }
+@media (max-width: 559px) { .lights { display: none; } .ringw { width: 84px; height: 84px; } .ringw .flaps { --fw: 23px; } .map .mlab { font-size: 34px; } }
+@media (min-width: 960px) { .ringw { width: 124px; height: 124px; } .ringw .flaps { --fw: 34px; } }
 /* Rendimiento */
 .cd { position: fixed; inset: 0; z-index: 57; display: grid; place-content: center; justify-items: center; gap: 10px; text-align: center; background: rgba(5, 7, 13, .82); }
 .cd-n { font-family: var(--f-board); font-weight: 900; font-size: clamp(120px, 38vw, 260px); line-height: .9; color: var(--amber); text-shadow: 0 0 50px rgba(255, 176, 0, .6); }
@@ -495,7 +515,7 @@ details ul { margin: 10px 0 0; padding-left: 20px; display: flex; flex-direction
 @media (hover: none), (max-width: 700px) {
   .radar, #bgfx::before, .fflag { display: none !important; }
   .star { animation: none; opacity: .35; }
-  .turn { animation: none; background: linear-gradient(var(--panel-2), var(--panel)) padding-box, linear-gradient(135deg, var(--pc), rgba(255, 255, 255, .06) 60%, var(--pc)) border-box; box-shadow: 0 10px 22px rgba(0, 0, 0, .45); }
+  .turn { animation: none; background: radial-gradient(320px 160px at 0% 0%, color-mix(in srgb, var(--pc) 20%, transparent), transparent 70%), linear-gradient(var(--panel-2), var(--panel)) padding-box, linear-gradient(135deg, var(--pc), rgba(255, 255, 255, .06) 60%, var(--pc)) border-box; box-shadow: 0 10px 22px rgba(0, 0, 0, .45); }
   .btn.primary::after { display: none; }
   .panel, .board { box-shadow: 0 6px 14px rgba(0, 0, 0, .35); }
   .pass { box-shadow: none; animation-duration: .3s; }
@@ -503,6 +523,7 @@ details ul { margin: 10px 0 0; padding-left: 20px; display: flex; flex-direction
   .fd { box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .09); }
   .ticker .track { animation-duration: 90s; }
   .tt.plane svg { animation: none; }
+  .turn .av { animation: none; }
   .k.yt { animation: none; }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -3831,6 +3852,7 @@ function baseMapHtml() {
   for (const id in M.c) polys += `<path class="ld" d="${M.c[id]}"/>`;
   return (BASEMAP = `<svg class="map" viewBox="0 0 ${M.W} ${M.H}" role="img" aria-label="Mapa del mundo con los países dichos"><path class="sph" d="${M.sphere}"/><path class="grat" d="${M.grat}"/><g class="land">${polys}</g><g id="mdyn"></g></svg>`);
 }
+const esc = t => String(t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 function dynMapHtml() {
   const M = MAPDATA, last = S.used[S.used.length - 1];
   let polys = '', mk = '', ring = '';
@@ -3841,7 +3863,14 @@ function dynMapHtml() {
     if (id && M.c[id] && !seen.has(id)) { seen.add(id); polys += `<path class="lu${f}" style="fill:${col}" d="${M.c[id]}"/>`; }
     mk += `<circle id="mp-${IDX.get(u.k)}" class="mk${f}" cx="${pt[0]}" cy="${pt[1]}" r="10" style="fill:${col}"/>`;
   });
-  if (last && M.pts[last.c]) { const p = M.pts[last.c]; ring = `<circle class="mring" cx="${p[0]}" cy="${p[1]}" r="16" style="stroke:${colorOf(last.ci)}"/>`; }
+  const prv = S.used[S.used.length - 2];
+  if (last && prv && M.pts[last.c] && M.pts[prv.c]) {
+    const a = M.pts[prv.c], b = M.pts[last.c], dx = b[0] - a[0], dy = b[1] - a[1], d = Math.hypot(dx, dy);
+    ring += `<path class="arc" style="stroke:${colorOf(last.ci)}" d="M${a[0]} ${a[1]} Q${(a[0] + b[0]) / 2} ${Math.min(a[1], b[1]) - d * .32} ${b[0]} ${b[1]}"/>`;
+  }
+  if (last && M.pts[last.c]) { const p = M.pts[last.c], an = p[0] > 800 ? 'end' : p[0] < 200 ? 'start' : 'middle', ty = p[1] < 70 ? p[1] + 44 : p[1] - 22;
+    ring += `<text class="mlab" x="${p[0]}" y="${ty}" text-anchor="${an}">${esc(last.n.toUpperCase())}</text>`; }
+  if (last && M.pts[last.c]) { const p = M.pts[last.c]; ring += `<circle class="mring" cx="${p[0]}" cy="${p[1]}" r="16" style="stroke:${colorOf(last.ci)}"/>`; }
   return polys + ring + mk;
 }
 function updateMap() {
@@ -3878,7 +3907,9 @@ function gameView() {
     if (g) return h('div', { id: 'slot-' + i + '-done', class: 'slot done', style: `--rot:${(hash(g.k || g.n) % 7) - 3}deg` }, h('span', { class: 'fl', text: flag(g.c) }), h('span', { class: 'sn', text: g.n }));
     return h('div', { id: 'slot-' + i, class: 'slot' + (i === got.length ? ' active' : '') }, h('span', { class: 'num', text: String(i + 1) }), h('span', { class: 'small', text: i === got.length ? 'Falta este' : '' }));
   }));
-  const clock = h('div', { class: 'clock', id: 'clock', 'data-keep': true }, h('div', { class: 'k', text: 'Segundos' }), h('span', { class: 'flaps', id: 'tnum' }));
+  const clock = h('div', { class: 'clock', id: 'clock', 'data-keep': true },
+    h('div', { class: 'ringw' }, h('div', { html: '<svg viewBox="0 0 100 100" aria-hidden="true"><circle class="rt" cx="50" cy="50" r="44" pathLength="100"/><circle class="ringp" id="ringp" cx="50" cy="50" r="44" pathLength="100"/></svg>', style: 'display:contents' }), h('span', { class: 'flaps', id: 'tnum' })),
+    h('div', { class: 'k', text: 'Segundos' }));
   const lights = h('div', { class: 'lights', id: 'lights', 'data-keep': true, 'aria-hidden': 'true' }, Array.from({ length: 24 }, () => h('i')));
   const mePlayer = S.roster.find(p => p.id === uid);
   const turn = h('section', { class: 'panel turn', id: 'turn', style: `--pc:${colorOf(cp && cp.ci)}` },
@@ -3918,7 +3949,7 @@ function gameView() {
   const used = h('section', { class: 'panel', id: 'sec-used' },
     h('div', { class: 'ph' }, h('h2', { text: 'Mi pasaporte' }), h('span', { class: 'k', text: usedN + ' sellos' })),
     usedN ? h('div', { class: 'book', id: 'chips' }, usedList.map(u => stampView(u)))
-      : h('p', { class: 'muted', id: 'chips', text: 'Todavía no hay sellos. Cada país dicho se estampa acá.' }));
+      : h('div', { class: 'book', id: 'chips' }, [0, 1, 2].map(i => h('span', { class: 'stamp ghost', style: `--rot:${[-4, 3, -2][i]}deg` }, h('span', { class: 'fl', text: '?' }), h('span', { class: 'sn', text: 'Sin sello' })))));
   const log = h('section', { class: 'panel', id: 'sec-log' },
     h('h2', { text: 'Jugadas' }),
     h('ul', { class: 'log', id: 'log' }, S.log.slice(-8).reverse().map(l => h('li', { id: 'lg-' + l.i, class: l.k }, h('span', { class: 'r', text: 'R' + l.r }), l.t))));
@@ -4048,6 +4079,7 @@ function renderNow() {
   else $app.replaceChildren(...next.childNodes);
 
   updateMap(); wakeSync();
+  { const cc = S.phase === 'playing' && S.roster[S.cur] ? colorOf(S.roster[S.cur].ci) : '#FFB000'; document.documentElement.style.setProperty('--bgc', cc); }
   const bn = document.getElementById('bignum');
   if (bn) setFlaps(bn, bn.dataset.v, 3);
   document.querySelectorAll('.stepper .val').forEach(v => {
@@ -4087,6 +4119,7 @@ function tick() {
     tn.dataset.s = String(sec); setFlaps(tn, sec, 2);
     if (canActNow && sec > 0 && sec <= 5) sfx.tick();
   }
+  const rp = document.getElementById('ringp'); if (rp) rp.style.strokeDashoffset = String(100 - Math.round(100 * Math.max(0, Math.min(1, rem / total))));
   const lights = document.getElementById('lights');
   if (lights) { const on = Math.round(24 * Math.max(0, Math.min(1, rem / total))); [...lights.children].forEach((e, i) => e.classList.toggle('off', i >= on)); }
   document.getElementById('turn').classList.toggle('low', rem < 10000);
