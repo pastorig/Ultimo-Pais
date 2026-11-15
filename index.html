@@ -562,6 +562,13 @@ body { font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased; 
 @keyframes crownin { from { opacity: 0; transform: translateY(-40px) scale(.4) rotate(-20deg); } to { opacity: 1; transform: none; } }
 #view-lobby.enter :is(.panel) { animation: rise .55s cubic-bezier(.2, .8, .2, 1) both; }
 @media (prefers-reduced-motion: reduce) { .cf { display: none; } }
+/* Mapa más vivo */
+.board { background: radial-gradient(120% 70% at 50% 62%, rgba(53, 214, 230, .13), transparent 62%), linear-gradient(180deg, var(--panel-2), var(--panel)); }
+.map .sph { fill: url(#ocean); fill: rgba(20, 60, 96, .38); stroke: rgba(120, 220, 255, .38); stroke-width: 1.8; }
+.map .grat { stroke: rgba(120, 200, 255, .10); }
+.map .ld { fill: rgba(190, 215, 255, .20); stroke: rgba(210, 230, 255, .34); stroke-width: .55; }
+.map .lu { fill-opacity: .9; stroke: #fff; stroke-width: 1.1; }
+.map .mlab { font-size: 32px; }
 /* Rendimiento */
 .cd { position: fixed; inset: 0; z-index: 57; display: grid; place-content: center; justify-items: center; gap: 10px; text-align: center; background: rgba(5, 7, 13, .82); }
 .cd-n { font-family: var(--f-board); font-weight: 900; font-size: clamp(120px, 38vw, 260px); line-height: .9; color: var(--amber); text-shadow: 0 0 50px rgba(255, 176, 0, .6); }
