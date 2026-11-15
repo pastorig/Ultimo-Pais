@@ -1,4 +1,4 @@
-<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#05070D"><link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js"><link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.14.1/firebase-database.js"><link rel="preconnect" href="https://www.gstatic.com" crossorigin><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><title>Último País</title><link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E%F0%9F%8C%8D%3C/text%3E%3C/svg%3E"><style>html{-webkit-text-size-adjust:100%;text-size-adjust:100%}body{margin:0}[hidden]{display:none!important}</style></head><body>
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-content"><meta name="theme-color" content="#05070D"><link rel="manifest" href="/manifest.webmanifest"><link rel="apple-touch-icon" href="/icon-180.png"><link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js"><link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.14.1/firebase-database.js"><link rel="preconnect" href="https://www.gstatic.com" crossorigin><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><title>Último País</title><link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E%F0%9F%8C%8D%3C/text%3E%3C/svg%3E"><style>html{-webkit-text-size-adjust:100%;text-size-adjust:100%}body{margin:0}[hidden]{display:none!important}</style></head><body>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -391,6 +391,7 @@ details ul { margin: 10px 0 0; padding-left: 20px; display: flex; flex-direction
 .wrap { gap: 12px; } .stack { gap: 12px; }
 @media (max-width: 559px) {
   body { padding-top: 10px; }
+  #turn { order: 1; } #board { order: 2; }
   .tt { --w: clamp(26px, 9.8vw, 44px); }
   .trow { gap: 4px; }
   .hdr { gap: 6px; }
@@ -3496,7 +3497,17 @@ async function actSubmit(forId) {
   const el = document.getElementById('turn-input');
   const raw = el ? el.value : '';
   if (el) el.value = '';
+  // Respuesta inmediata: mostramos el país ya, y la base de datos lo confirma después.
+  const before = S; let opt = false;
+  try {
+    const c = JSON.parse(JSON.stringify(S)), pre = submitCountry(c, forId, raw);
+    if (pre && !pre.error && pre.state && pre.state.used.length > S.used.length) {
+      setState({ ...pre.state, cur: S.cur, round: S.round, phase: S.phase, deadline: S.deadline, letter: S.letter, cat: S.cat, sdn: S.sdn, winner: S.winner, winTeam: S.winTeam, outs: S.outs });
+      opt = true;
+    }
+  } catch (e) {}
   const res = await run(s => submitCountry(s, forId, raw));
+  if (opt && (!res || res.error) && S.used.length > before.used.length) setState(before);
   const e2 = document.getElementById('turn-input');
   if (e2) { if (res && res.error && res.keep) { e2.value = raw; e2.select(); } e2.focus(); }
 }
@@ -3958,11 +3969,11 @@ function tick() {
   const btn = document.getElementById('timeout-btn');
   if (btn) btn.hidden = rem > -4000;
   const cpA = S.roster[S.cur];
-  if (cpA && isAway(cpA.id) && !busy && !enforcing && S.go < Date.now() && (S.hostId === uid || Date.now() - lastTry > 9000) && Date.now() - lastTry > 3000) {
+  if (connected && cpA && isAway(cpA.id) && !busy && !enforcing && S.go < Date.now() && (S.hostId === uid || Date.now() - lastTry > 9000) && Date.now() - lastTry > 3000) {
     lastTry = Date.now(); enforcing = true;
     actSkip(S.seq).finally(() => { enforcing = false; }); return;
   }
-  if (((rem < -1500 && S.hostId === uid) || rem < -6000) && !busy && !enforcing && Date.now() - lastTry > 3000) {
+  if (connected && ((rem < -1500 && S.hostId === uid) || rem < -6000) && !busy && !enforcing && Date.now() - lastTry > 3000) {
     lastTry = Date.now(); enforcing = true;
     actTimeout(S.seq).finally(() => { enforcing = false; });
   }
@@ -4007,13 +4018,13 @@ let psig = '';
 function listen() {
   stateRef.onSnapshot(snap => {
     connected = true;
-    setState(snap.exists ? { ...defaultState(), ...snap.data() } : defaultState());
+    setState(snap.exists ? { ...defaultState(), ...snap.data() } : defaultState()); saveCache();
   }, () => { slow = true; render(); });
   playersRef.onSnapshot(q => {
     connected = true;
     P = q.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => (a.at || 0) - (b.at || 0));
     const sig = JSON.stringify(P.map(p => [p.id, p.name, p.manual ? 1 : 0, p.away ? 1 : 0, p.at]));
-    if (sig !== psig) { psig = sig; render(); }
+    if (sig !== psig) { psig = sig; render(); saveCache(); }
   }, () => { slow = true; render(); });
 }
 async function bootArtifact() {
@@ -4071,6 +4082,17 @@ async function bootFirebase() {
     wireTyping({ set: d => dbm.set(R('/typing'), clean(d)), onSnapshot: (cb, err) => dbm.onValue(R('/typing'), s => cb(snapOf(s.val())), err) });
     listen();
   } catch (e) { console.error(e); connErr = String((e && e.message) || e).slice(0, 120); slow = true; render(); }
+}
+(function hydrate() {
+  try {
+    const c = JSON.parse(localStorage.getItem('up-cache-' + ROOM) || 'null');
+    if (c && Date.now() - c.t < 1800000 && c.s) { S = { ...defaultState(), ...c.s }; P = c.p || []; psig = ''; }
+  } catch (e) {}
+})();
+let cacheT = 0;
+function saveCache() {
+  if (Date.now() - cacheT < 1500) return; cacheT = Date.now();
+  try { localStorage.setItem('up-cache-' + ROOM, JSON.stringify({ s: S, p: P.map(p => ({ id: p.id, name: p.name, manual: p.manual, at: p.at })), t: Date.now() })); } catch (e) {}
 }
 (async function boot() {
   render();
