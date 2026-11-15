@@ -4160,7 +4160,7 @@ function confetti() {
   setTimeout(() => document.querySelectorAll('.cf').forEach(e => e.remove()), 5200);
 }
 function renderNow() {
-  if (lastPh !== S.phase) { if (S.phase === 'over' && lastPh === 'playing') confetti(); if (lastPh) { try { window.scrollTo(0, 0); } catch (e) {} } lastPh = S.phase; }
+  if (lastPh !== S.phase) { if (lastPh) { try { window.scrollTo(0, 0); } catch (e) {} } lastPh = S.phase; }
   canActNow = false;
   const body = needSetup ? setupView() : S.phase === 'playing' ? gameView() : S.phase === 'over' ? overView() : lobbyView();
   if (S.phase === 'lobby') body.classList.add('enter');
