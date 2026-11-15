@@ -547,6 +547,21 @@ body { font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased; 
 }
 .btn:disabled { opacity: .5; cursor: not-allowed; }
 .toast { backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border: 1px solid rgba(255, 255, 255, .12); }
+#splash { position: fixed; inset: 0; z-index: 200; display: grid; place-items: center; background: radial-gradient(ellipse at 50% 40%, #0E1730, #05070D 70%); transition: opacity .45s ease, visibility .45s; }
+#splash.off { opacity: 0; visibility: hidden; pointer-events: none; }
+.sp-in { display: grid; justify-items: center; gap: 14px; }
+.sp-plane { width: 64px; height: 64px; color: var(--amber); filter: drop-shadow(0 0 14px rgba(255, 176, 0, .7)); animation: spfly 1.6s ease-in-out infinite; }
+@keyframes spfly { 0%, 100% { transform: translateY(6px) rotate(0); } 50% { transform: translateY(-8px) rotate(4deg); } }
+.sp-t { font-family: var(--f-mono); font-weight: 800; letter-spacing: .3em; color: #fff; font-size: 15px; }
+.sp-bar { width: 140px; height: 3px; border-radius: 3px; background: rgba(255, 255, 255, .1); overflow: hidden; }
+.sp-bar i { display: block; height: 100%; width: 40%; background: var(--amber); border-radius: 3px; animation: spbar 1.1s ease-in-out infinite; }
+@keyframes spbar { from { transform: translateX(-100%); } to { transform: translateX(350%); } }
+.cf { position: fixed; top: -14px; width: 9px; height: 14px; border-radius: 2px; z-index: 90; pointer-events: none; will-change: transform; animation: cfall var(--d, 3s) cubic-bezier(.3, .6, .5, 1) var(--l, 0s) forwards; }
+@keyframes cfall { to { transform: translate3d(var(--x, 0), 110vh, 0) rotate(var(--r, 540deg)); opacity: .9; } }
+.winner .crown { animation: crownin .9s cubic-bezier(.2, 1.3, .4, 1) both, bob 1.8s ease-in-out .9s infinite; }
+@keyframes crownin { from { opacity: 0; transform: translateY(-40px) scale(.4) rotate(-20deg); } to { opacity: 1; transform: none; } }
+#view-lobby.enter :is(.panel) { animation: rise .55s cubic-bezier(.2, .8, .2, 1) both; }
+@media (prefers-reduced-motion: reduce) { .cf { display: none; } }
 /* Rendimiento */
 .cd { position: fixed; inset: 0; z-index: 57; display: grid; place-content: center; justify-items: center; gap: 10px; text-align: center; background: rgba(5, 7, 13, .82); }
 .cd-n { font-family: var(--f-board); font-weight: 900; font-size: clamp(120px, 38vw, 260px); line-height: .9; color: var(--amber); text-shadow: 0 0 50px rgba(255, 176, 0, .6); }
@@ -581,6 +596,7 @@ body { font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased; 
 </style>
 
 <div id="bgfx" aria-hidden="true"><div class="radar"></div></div>
+<div id="splash" aria-hidden="true"><div class="sp-in"><svg viewBox="0 0 24 24" fill="currentColor" class="sp-plane"><path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5z"/></svg><div class="sp-t">ÚLTIMO PAÍS</div><div class="sp-bar"><i></i></div></div></div>
 <div id="vig"></div>
 <h1 class="sr">Último País</h1>
 <div id="app"></div>
@@ -3846,7 +3862,7 @@ function lobbyView() {
   const swTile = (id, color, title, hint, on, key, dis) => h('div', { class: 'tile sw', id, style: `--tc:${color}` },
     h('div', {}, h('div', { class: 'tn', text: title }), h('div', { class: 'hint', text: hint })),
     h('button', { class: 'switch', role: 'switch', 'aria-checked': String(!!on), 'aria-label': title, disabled: dis, onclick: () => actConfig(key, !cfg[key]) }));
-  return h('div', { class: 'stack cols', id: 'view-lobby' },
+  return h('div', { class: 'stack enter cols', id: 'view-lobby' },
     h('div', { class: 'colL stack' },
     h('section', { class: 'panel', id: 'sec-players' },
       h('div', { class: 'ph' }, h('h2', { text: 'Pasajeros' }), h('span', { class: 'k', text: P.length + ' a bordo' })),
@@ -4127,8 +4143,18 @@ function keepNode(from, to) {
 let rafP = false;
 function render() { if (rafP) return; rafP = true; requestAnimationFrame(() => { rafP = false; renderNow(); }); }
 let lastPh = null;
+const spT0 = Date.now();
+function hideSplash() { const s = document.getElementById('splash'); if (!s || s.classList.contains('off')) return; const w = Math.max(0, 700 - (Date.now() - spT0)); setTimeout(() => { s.classList.add('off'); setTimeout(() => s.remove(), 600); }, w); }
+setTimeout(hideSplash, 3500);
+function confetti() {
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const cols = ['#FFB000', '#35D6E6', '#FF5D73', '#6BE675', '#FF6BD6', '#fff'], n = 46, f = document.createDocumentFragment();
+  for (let i = 0; i < n; i++) { const e = document.createElement('i'); e.className = 'cf'; e.style.cssText = `left:${Math.random() * 100}vw;background:${cols[i % 6]};--x:${(Math.random() - .5) * 160}px;--r:${Math.random() * 900 - 300}deg;--d:${(2.4 + Math.random() * 1.8).toFixed(2)}s;--l:${(Math.random() * .6).toFixed(2)}s`; f.appendChild(e); }
+  document.body.appendChild(f);
+  setTimeout(() => document.querySelectorAll('.cf').forEach(e => e.remove()), 5200);
+}
 function renderNow() {
-  if (lastPh !== S.phase) { if (lastPh) { try { window.scrollTo(0, 0); } catch (e) {} } lastPh = S.phase; }
+  if (lastPh !== S.phase) { if (S.phase === 'over' && lastPh === 'playing') confetti(); if (lastPh) { try { window.scrollTo(0, 0); } catch (e) {} } lastPh = S.phase; }
   canActNow = false;
   const body = needSetup ? setupView() : S.phase === 'playing' ? gameView() : S.phase === 'over' ? overView() : lobbyView();
   if (S.phase === 'lobby') body.classList.add('enter');
@@ -4165,6 +4191,7 @@ function renderNow() {
     if (ti && canActNow && focusedFor !== key) { focusedFor = key; if (!(document.activeElement && document.activeElement.tagName === 'INPUT')) ti.focus(); }
   } else { lastCur = null; focusedFor = null; burstTarget = false; document.getElementById('vig').classList.remove('on'); }
   fresh = new Set();
+  hideSplash();
   tick();
 }
 
