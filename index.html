@@ -569,6 +569,20 @@ body { font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased; 
 .map .ld { fill: rgba(190, 215, 255, .20); stroke: rgba(210, 230, 255, .34); stroke-width: .55; }
 .map .lu { fill-opacity: .9; stroke: #fff; stroke-width: 1.1; }
 .map .mlab { font-size: 32px; }
+.mode .mi { display: inline-grid; place-items: center; filter: none; opacity: .75; font-size: 0; }
+.mode .mi svg { width: 19px; height: 19px; }
+.mode[aria-pressed="true"] .mi { color: var(--amber); opacity: 1; }
+.tflash { position: fixed; inset: 0; pointer-events: none; z-index: 40; background: radial-gradient(120% 80% at 50% 0%, color-mix(in srgb, var(--tc, #FFB000) 38%, transparent), transparent 70%); animation: tfl .85s ease-out both; }
+@keyframes tfl { 0% { opacity: 0; } 18% { opacity: 1; } 100% { opacity: 0; } }
+.stamp { position: relative; background: color-mix(in srgb, var(--pc) 9%, transparent); text-shadow: 0 0 1px color-mix(in srgb, var(--pc) 60%, transparent); }
+.stamp:not(.ghost)::after { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; opacity: .5;
+  background: radial-gradient(circle, #0B1222 0 .8px, transparent 1.1px) 0 0 / 7px 7px, radial-gradient(circle, #0B1222 0 .6px, transparent 1px) 3px 4px / 11px 9px, linear-gradient(115deg, transparent 40%, rgba(11, 18, 34, .55) 46%, transparent 52%); }
+.stamp .fl { filter: saturate(1.1) drop-shadow(0 1px 2px rgba(0, 0, 0, .5)); }
+#bgfx .aurora { position: absolute; left: -20%; right: -20%; top: -30%; height: 70%; opacity: .5; contain: strict;
+  background: radial-gradient(50% 60% at 30% 40%, color-mix(in srgb, var(--bgc, #FFB000) 22%, transparent), transparent 70%), radial-gradient(40% 50% at 75% 55%, rgba(53, 214, 230, .14), transparent 70%); transition: background 1s ease; }
+@media (hover: hover) and (min-width: 960px) { #bgfx .aurora { animation: aur 24s ease-in-out infinite alternate; } }
+@keyframes aur { from { transform: translate3d(-4%, 0, 0) scale(1); } to { transform: translate3d(5%, 6%, 0) scale(1.12); } }
+.btn.primary { background-image: linear-gradient(180deg, rgba(255, 255, 255, .28), rgba(255, 255, 255, 0) 55%); }
 /* Rendimiento */
 .cd { position: fixed; inset: 0; z-index: 57; display: grid; place-content: center; justify-items: center; gap: 10px; text-align: center; background: rgba(5, 7, 13, .82); }
 .cd-n { font-family: var(--f-board); font-weight: 900; font-size: clamp(120px, 38vw, 260px); line-height: .9; color: var(--amber); text-shadow: 0 0 50px rgba(255, 176, 0, .6); }
@@ -602,7 +616,7 @@ body { font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased; 
 }
 </style>
 
-<div id="bgfx" aria-hidden="true"><div class="radar"></div></div>
+<div id="bgfx" aria-hidden="true"><div class="aurora"></div><div class="radar"></div></div>
 <div id="splash" aria-hidden="true"><div class="sp-in"><svg viewBox="0 0 24 24" fill="currentColor" class="sp-plane"><path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5z"/></svg><div class="sp-t">ÚLTIMO PAÍS</div><div class="sp-bar"><i></i></div></div></div>
 <div id="vig"></div>
 <h1 class="sr">Último País</h1>
@@ -3825,6 +3839,8 @@ function headerView() {
     h('p', { class: 'sub', text: 'Nombrá países sin repetir antes de que se acabe el tiempo. El último en pie gana.' }));
 }
 
+const MICON = {"validate": "<circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"M8 12.5l3 3 5-6\"/>", "letters": "<path d=\"M4.5 20L12 4l7.5 16M7.7 14h8.6\"/>", "shrink": "<path d=\"M6 3h12M6 21h12M7 3c0 6 5 6 5 9s-5 3-5 9M17 3c0 6-5 6-5 9s5 3 5 9\"/>", "jokers": "<rect x=\"7\" y=\"3\" width=\"13\" height=\"17\" rx=\"2\"/><path d=\"M4 7v12a2 2 0 0 0 2 2h9\"/><path d=\"M13.5 8.5l1.6 3.2 3.4.4-2.5 2.3.7 3.3-3.2-1.7-3.2 1.7.7-3.3-2.5-2.3 3.4-.4z\" stroke-width=\"1.2\"/>", "bomb": "<circle cx=\"10.5\" cy=\"14.5\" r=\"6.5\"/><path d=\"M15 9.5l3-3M18 6.5l1.5-.5M17.5 3.5v2M20.5 7h-2\"/>", "clues": "<circle cx=\"10.5\" cy=\"10.5\" r=\"6.5\"/><path d=\"M15.5 15.5L21 21\"/>", "lightning": "<path d=\"M13 2L4.5 13.5H11L10 22l9-12h-6.5z\"/>", "bets": "<rect x=\"4\" y=\"4\" width=\"16\" height=\"16\" rx=\"3.5\"/><circle cx=\"9\" cy=\"9\" r=\"1.1\" fill=\"currentColor\"/><circle cx=\"15\" cy=\"15\" r=\"1.1\" fill=\"currentColor\"/><circle cx=\"15\" cy=\"9\" r=\"1.1\" fill=\"currentColor\"/><circle cx=\"9\" cy=\"15\" r=\"1.1\" fill=\"currentColor\"/>", "daily": "<rect x=\"3\" y=\"5\" width=\"18\" height=\"16\" rx=\"2.5\"/><path d=\"M3 10h18M8 3v4M16 3v4\"/><path d=\"M8 14h3v3H8z\" fill=\"currentColor\"/>"};
+const micon = k => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (MICON[k] || '') + '</svg>';
 let modeInfo = '';
 const MODES = [
   { k: 'validate', i: '✅', n: 'Validar', d: 'Acepta tildes y nombres comunes (EEUU, Holanda) y rechaza lo que no es un país.' },
@@ -3896,7 +3912,7 @@ function lobbyView() {
       h('div', { class: 'k', text: 'Modos (se pueden combinar)' }),
       h('div', { class: 'modes', id: 'modes' }, MODES.map(m => {
         const on = !!cfg[m.k] && (!m.v || cfg.validate), dis = m.v && !cfg.validate;
-        return h('button', { id: 'md-' + m.k, class: 'mode', 'aria-pressed': String(on), disabled: dis, onclick: () => { modeInfo = m.k; actConfig(m.k, !cfg[m.k]); } }, h('span', { class: 'mi', text: m.i }), m.n);
+        return h('button', { id: 'md-' + m.k, class: 'mode', 'aria-pressed': String(on), disabled: dis, onclick: () => { modeInfo = m.k; actConfig(m.k, !cfg[m.k]); } }, h('span', { class: 'mi', html: micon(m.k) }), m.n);
       })),
       h('div', { class: 'modeinfo', id: 'modeinfo' }, (() => { const m = MODES.find(x => x.k === modeInfo); return m ? [h('b', { text: m.n + ': ' }), (m.k === 'daily' ? dailyHint() : m.d) + (m.v && !cfg.validate ? ' (necesita "Validar")' : '')] : 'Tocá un modo para ver qué hace.'; })()),
       h('div', { class: 'chiprow', id: 't-cat' }, h('span', { class: 'k', text: 'Categoría' }),
@@ -4191,6 +4207,7 @@ function renderNow() {
     const key = S.round + ':' + S.cur;
     if (lastCur !== key) {
       retrigger(document.getElementById('turnhead'), 'turnin');
+      { const c2 = S.roster[S.cur], fx = document.getElementById('fx'); if (c2 && fx && lastCur !== null && !reduced()) { const f = document.createElement('div'); f.className = 'tflash'; f.style.setProperty('--tc', colorOf(c2.ci)); fx.append(f); setTimeout(() => f.remove(), 900); } }
       if (lastCur !== null) { const c0 = S.roster[S.cur]; sfx.turnFor(c0 ? c0.ci : 0, !!(c0 && c0.id === uid)); }
       lastCur = key;
       { const c1 = S.roster[S.cur]; if (c1 && c1.id === uid && document.hidden) { try { document.title = '¡TU TURNO! · Último País'; } catch (e) {} } }
