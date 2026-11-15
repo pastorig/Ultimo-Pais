@@ -30,7 +30,7 @@
   --f-emoji: 'Twemoji Country Flags', 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif;
 }
 * { box-sizing: border-box; }
-html { background: var(--bg); overflow-x: clip; }
+html { background: var(--bg); overflow-x: clip; overscroll-behavior-y: none; }
 .notice, .tt { overflow-wrap: anywhere; }
 body {
   background: var(--bg); color: var(--ink);
@@ -3081,6 +3081,8 @@ function lookup(raw) {
   return null;
 }
 
+let SKEW = 0;
+const nowS = () => Date.now() + SKEW;
 /* ---------- Lógica de la partida ---------- */
 const PALETTE = ['#FF5D73', '#FFB547', '#7BE05A', '#2DD4D4', '#4DA3FF', '#9B6BFF', '#FF6BD6', '#FF8A3D'];
 const colorOf = i => PALETTE[(((i || 0) % 8) + 8) % 8];
@@ -3123,7 +3125,7 @@ function effSeconds(s) {
   const shr = c.shrink ? 5 * Math.floor(((s.round || 1) - 1) / 3) : 0;
   return Math.max(MIN_SEC, base - shr - 2 * (s.sdn || 0));
 }
-function setDeadline(s) { s.deadline = Math.max(Date.now(), s.go || 0) + effSeconds(s) * 1000; s.hint = ''; }
+function setDeadline(s) { s.deadline = Math.max(nowS(), s.go || 0) + effSeconds(s) * 1000; s.hint = ''; }
 function pickCat(s) {
   if (s.config.daily && s.dayCat) { s.cat = s.dayCat; return; }
   const m = s.config.mode;
@@ -3185,8 +3187,8 @@ function submitCountry(s, forId, raw) {
   if (s.phase !== 'playing') return { error: 'La partida no está en curso.' };
   const p = s.roster[s.cur];
   if (!p || p.id !== forId) return { error: 'Ya no es tu turno.' };
-  if (s.go && Date.now() < s.go - 400) return { error: 'Esperá la cuenta regresiva.' };
-  if (s.deadline && Date.now() > s.deadline + 1500) return { error: 'Se acabó el tiempo.' };
+  if (s.go && nowS() < s.go - 400) return { error: 'Esperá la cuenta regresiva.' };
+  if (s.deadline && nowS() > s.deadline + 1500) return { error: 'Se acabó el tiempo.' };
   const txt = raw.trim();
   if (!txt) return { error: 'Escribí un país.' };
   let it, ent = null;
@@ -3204,7 +3206,7 @@ function submitCountry(s, forId, raw) {
   s.got = s.got || [];
   s.got.push({ n: it.n, c: it.c });
   if (s.got.length >= s.config.perTurn) {
-    const rem = Math.max(0, (s.deadline || Date.now()) - Date.now());
+    const rem = Math.max(0, (s.deadline || nowS()) - nowS());
     p.lo = p.lo == null ? rem : Math.min(p.lo, rem); p.fa = Math.max(p.fa || 0, rem);
     addLog(s, 'say', `${p.name}: ${s.got.map(g => g.n).join(', ')}`);
     nextTurn(s);
@@ -3368,7 +3370,7 @@ function toast(msg) {
 }
 let seenRx = null, lastBeat = 0;
 function countdown(s) {
-  const ms = (s.go || 0) - Date.now();
+  const ms = (s.go || 0) - nowS();
   if (ms < -500) { banner('¡Despegue!', ''); sfx.go(); return; }
   const ov = h('div', { class: 'cd' }, h('div', { class: 'cd-n', text: '' }), h('div', { class: 'cd-s', text: `${s.roster.length} jugadores · ${s.config.perTurn} por turno` }));
   document.getElementById('fx').append(ov);
@@ -3457,7 +3459,7 @@ async function dbDo(fn) {
 /* ---------- Acciones ---------- */
 function actJoin(name) {
   name = name.trim().slice(0, 24); if (!name) return toast('Escribí tu nombre.');
-  dbDo(() => playersRef.doc(uid).set({ name, at: Date.now(), manual: false }));
+  dbDo(() => playersRef.doc(uid).set({ name, at: nowS(), manual: false }));
 }
 function actRename(id, name) {
   name = name.trim().slice(0, 24); if (!name) return;
@@ -3466,7 +3468,7 @@ function actRename(id, name) {
 }
 function actAddManual(name) {
   name = name.trim().slice(0, 24); if (!name) return;
-  dbDo(() => playersRef.doc('m' + Math.random().toString(36).slice(2, 9)).set({ name, at: Date.now(), manual: true }));
+  dbDo(() => playersRef.doc('m' + Math.random().toString(36).slice(2, 9)).set({ name, at: nowS(), manual: true }));
 }
 function actRemove(id) { dbDo(() => playersRef.doc(id).delete()); }
 function actConfig(key, val) {
@@ -3486,7 +3488,7 @@ function actStart() {
     s.cat = 'todos'; pickCat(s); s.hint = ''; s.winTeam = -1;
     s.roster = players.map((p, i) => ({ id: p.id, name: p.name, alive: true, manual: !!p.manual, ci: T ? TEAMS[i % T].ci : p.ci, tm: T ? i % T : -1, jk: s.config.jokers ? { t: 1, p: 1, h: 1 } : { t: 0, p: 0, h: 0 } }));
     if (T) { const o = []; for (let t = 0; t < T; t++) s.roster.forEach(p => { if (p.tm === t) o.push(p); }); s.roster = []; const mx = Math.max(...Array.from({ length: T }, (_, t) => o.filter(p => p.tm === t).length)); for (let k = 0; k < mx; k++) for (let t = 0; t < T; t++) { const m = o.filter(p => p.tm === t)[k]; if (m) s.roster.push(m); } }
-    s.go = Date.now() + 3600;
+    s.go = nowS() + 3600;
     pickLetter(s);
     addLog(s, 'say', `Empieza la partida. Primero: ${s.roster[0].name}`);
     setDeadline(s);
@@ -3534,26 +3536,26 @@ function actSkip(expectSeq) {
 let lastBeatP = 0;
 function presence(away) {
   const me = P.find(p => p.id === uid); if (!me || !playersRef) return;
-  try { Promise.resolve(playersRef.doc(uid).update(away ? { away: true, awayAt: Date.now(), seen: Date.now() } : { away: false, seen: Date.now() })).catch(() => {}); } catch (e) {}
+  try { Promise.resolve(playersRef.doc(uid).update(away ? { away: true, awayAt: nowS(), seen: nowS() } : { away: false, seen: nowS() })).catch(() => {}); } catch (e) {}
 }
 document.addEventListener('visibilitychange', () => presence(document.hidden));
 setInterval(() => { if (!document.hidden) presence(false); }, 20000);
-function isAway(id) { const q = P.find(p => p.id === id); if (!q || q.manual) return false; return !!((q.away && Date.now() - (q.awayAt || 0) > 25000) || (q.seen && Date.now() - q.seen > 70000)); }
+function isAway(id) { const q = P.find(p => p.id === id); if (!q || q.manual) return false; return !!((q.away && nowS() - (q.awayAt || 0) > 25000) || (q.seen && nowS() - q.seen > 70000)); }
 function actJoker(forId, kind) {
   run(s => {
     const p = s.roster[s.cur];
     if (s.phase !== 'playing' || !p || p.id !== forId) return { error: 'Ya no es tu turno.' };
     if (!p.jk || !p.jk[kind]) return { error: 'Ya usaste ese comodín.' };
     p.jk[kind] = 0;
-    if (kind === 't') { s.deadline = (s.deadline || Date.now()) + 10000; addLog(s, 'say', `${p.name} usó un comodín: +10 segundos`); }
+    if (kind === 't') { s.deadline = (s.deadline || nowS()) + 10000; addLog(s, 'say', `${p.name} usó un comodín: +10 segundos`); }
     else { addLog(s, 'say', `${p.name} usó un comodín: pasa el turno`); nextTurn(s); }
     return { state: s };
   }).then(() => { const e2 = document.getElementById('turn-input'); if (e2) e2.focus(); });
 }
 let lastRx = 0;
 function actReact(e) {
-  if (!stateRef || Date.now() - lastRx < 700) return;
-  lastRx = Date.now();
+  if (!stateRef || nowS() - lastRx < 700) return;
+  lastRx = nowS();
   mutate(s => { s.rxN = (s.rxN || 0) + 1; s.rx = (s.rx || []).slice(-7); s.rx.push({ i: s.rxN, e }); return { state: s }; }).catch(() => {});
 }
 function actTimeout(expectSeq) {
@@ -3566,6 +3568,17 @@ function actReset() {
   confirmAct = null;
   run(s => ({ state: { ...defaultState(), config: s.config, wins: s.wins || {}, daily: s.daily || {}, seq: s.seq } }));
 }
+
+/* Pantalla encendida mientras se juega */
+let wl = null;
+async function wakeSync() {
+  try {
+    if (S.phase === 'playing' && !document.hidden && 'wakeLock' in navigator) {
+      if (!wl) { wl = await navigator.wakeLock.request('screen'); wl.addEventListener('release', () => { wl = null; }); }
+    } else if (wl) { wl.release(); wl = null; }
+  } catch (e) { wl = null; }
+}
+document.addEventListener('visibilitychange', () => { wakeSync(); if (!document.hidden && window.__goOnline) window.__goOnline(); });
 function toggleMute() { muted = !muted; try { localStorage.setItem('up-mute', muted ? '1' : '0'); } catch (e) {} if (!muted) sfx.ok(); render(); }
 
 /* ---------- Vista ---------- */
@@ -3917,12 +3930,13 @@ function renderNow() {
   if (S.phase === 'lobby') body.classList.add('enter');
   const notices = [];
   if (!connected && slow) notices.push(h('div', { class: 'notice', id: 'notice', role: 'status', text: standalone ? 'No se pudo conectar con la base de datos' + (connErr ? ' (' + connErr + ')' : '') + '. Revisá la configuración de Firebase y las reglas.' : 'No hay conexión con la partida todavía. Si el problema sigue, abrí el link con tu sesión iniciada.' }));
+  if (offline && connected) notices.push(h('div', { class: 'notice conn', id: 'reconnecting', role: 'status', text: 'Se cortó la conexión. Reconectando…' }));
   if (!connected && !slow && !needSetup) notices.push(h('div', { class: 'notice conn', id: 'connecting', role: 'status', text: 'Conectando con la partida…' }));
   const next = h('div', { id: 'app' }, h('div', { class: 'wrap' }, headerView(), notices, tickerView(), body, toastMsg ? h('div', { class: 'toast', id: 'toast', role: 'status', text: toastMsg }) : null));
   if (window.morphdom) morphdom($app, next, { onBeforeElUpdated: keepNode });
   else $app.replaceChildren(...next.childNodes);
 
-  updateMap();
+  updateMap(); wakeSync();
   const bn = document.getElementById('bignum');
   if (bn) setFlaps(bn, bn.dataset.v, 3);
   document.querySelectorAll('.stepper .val').forEach(v => {
@@ -3953,9 +3967,9 @@ let lastTry = 0, enforcing = false;
 function tick() {
   if (S.phase !== 'playing' || !S.deadline) return;
   const tn = document.getElementById('tnum'); if (!tn) return;
-  const rem = S.deadline - Date.now();
+  const rem = S.deadline - nowS();
   const lab = document.getElementById('think-label');
-  if (lab) { const cp0 = S.roster[S.cur]; const ty = typingSeen && cp0 && typingSeen.id === cp0.id && Date.now() - typingSeen.t < 3000; const txt = isAway(cp0 && cp0.id) ? ' se fue de la página' : ty ? ' está escribiendo' : ' está respondiendo'; if (lab.textContent !== txt) lab.textContent = txt; }
+  if (lab) { const cp0 = S.roster[S.cur]; const ty = typingSeen && cp0 && typingSeen.id === cp0.id && nowS() - typingSeen.t < 3000; const txt = isAway(cp0 && cp0.id) ? ' se fue de la página' : ty ? ' está escribiendo' : ' está respondiendo'; if (lab.textContent !== txt) lab.textContent = txt; }
   const total = Math.max(MIN_SEC, S.config.seconds || 30) * 1000;
   const sec = Math.min(Math.max(0, Math.ceil(rem / 1000)), effSeconds(S));
   if (tn.dataset.s !== String(sec)) {
@@ -3969,21 +3983,21 @@ function tick() {
   const btn = document.getElementById('timeout-btn');
   if (btn) btn.hidden = rem > -4000;
   const cpA = S.roster[S.cur];
-  if (connected && cpA && isAway(cpA.id) && !busy && !enforcing && S.go < Date.now() && (S.hostId === uid || Date.now() - lastTry > 9000) && Date.now() - lastTry > 3000) {
-    lastTry = Date.now(); enforcing = true;
+  if (connected && cpA && isAway(cpA.id) && !busy && !enforcing && S.go < nowS() && (S.hostId === uid || nowS() - lastTry > 9000) && nowS() - lastTry > 3000) {
+    lastTry = nowS(); enforcing = true;
     actSkip(S.seq).finally(() => { enforcing = false; }); return;
   }
-  if (connected && ((rem < -1500 && S.hostId === uid) || rem < -6000) && !busy && !enforcing && Date.now() - lastTry > 3000) {
-    lastTry = Date.now(); enforcing = true;
+  if (connected && ((rem < -1500 && S.hostId === uid) || rem < -6000) && !busy && !enforcing && nowS() - lastTry > 3000) {
+    lastTry = nowS(); enforcing = true;
     actTimeout(S.seq).finally(() => { enforcing = false; });
   }
 }
 setInterval(tick, 400);
 setInterval(() => {
   if (muted || S.phase !== 'playing' || !S.deadline || document.hidden) return;
-  const rem = S.deadline - Date.now(); if (rem <= 0) return;
+  const rem = S.deadline - nowS(); if (rem <= 0) return;
   const gap = rem < 5000 ? 300 : rem < 10000 ? 480 : 900;
-  if (Date.now() - lastBeat >= gap) { lastBeat = Date.now(); tone(rem < 5000 ? 170 : 110, .07, 0, 'triangle', .03); }
+  if (nowS() - lastBeat >= gap) { lastBeat = nowS(); tone(rem < 5000 ? 170 : 110, .07, 0, 'triangle', .03); }
 }, 100);
 setInterval(() => {
   const ts = document.querySelectorAll('#title .tt[data-ch]'); if (!ts.length || reduced()) return;
@@ -4014,7 +4028,7 @@ function wireTyping(ref) {
     if (d) typingSeen = { id: d.id, t: Date.now() };
   }, () => {});
 }
-let psig = '';
+let psig = '', offline = false;
 function listen() {
   stateRef.onSnapshot(snap => {
     connected = true;
@@ -4051,6 +4065,9 @@ async function bootFirebase() {
       import(`https://www.gstatic.com/firebasejs/${V}/firebase-database.js`)]));
     const rdb = dbm.getDatabase(appm.initializeApp(FIREBASE_CONFIG));
     const R = path => dbm.ref(rdb, 'ultimopais/' + ROOM + path);
+    dbm.onValue(dbm.ref(rdb, '.info/serverTimeOffset'), s => { SKEW = Number(s.val()) || 0; });
+    dbm.onValue(dbm.ref(rdb, '.info/connected'), s => { const up = s.val() === true; if (offline !== !up) { offline = !up; render(); } });
+    window.__goOnline = () => { try { dbm.goOnline(rdb); } catch (e) {} };
     const clean = o => JSON.parse(JSON.stringify(o));
     const snapOf = v => ({ exists: v !== null && v !== undefined, data: () => v });
     stateRef = {
