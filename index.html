@@ -499,6 +499,31 @@ details ul { margin: 10px 0 0; padding-left: 20px; display: flex; flex-direction
 .btn:active { transform: scale(.97); }
 @media (max-width: 559px) { .lights { display: none; } .ringw { width: 84px; height: 84px; } .ringw .flaps { --fw: 23px; } .map .mlab { font-size: 34px; } }
 @media (min-width: 960px) { .ringw { width: 124px; height: 124px; } .ringw .flaps { --fw: 34px; } }
+
+/* Sala renovada */
+.modes { display: flex; flex-wrap: wrap; gap: 8px; }
+.mode { display: inline-flex; align-items: center; gap: 7px; min-height: 42px; padding: 8px 13px; border-radius: 99px; border: 1.5px solid var(--line-2); background: rgba(255, 255, 255, .05); color: var(--ink); font-weight: 700; font-size: 14px; -webkit-appearance: none; appearance: none; transition: background .15s, border-color .15s, transform .1s; }
+.mode .mi { font-family: var(--f-emoji); font-size: 17px; line-height: 1; filter: grayscale(1); opacity: .7; }
+.mode[aria-pressed="true"] { background: rgba(255, 176, 0, .16); border-color: var(--amber); color: var(--amber-2); box-shadow: 0 0 14px rgba(255, 176, 0, .25); }
+.mode[aria-pressed="true"] .mi { filter: none; opacity: 1; }
+.mode:disabled { opacity: .35; }
+.mode:active { transform: scale(.96); }
+.modeinfo { font-size: 14px; color: var(--muted); min-height: 2.6em; padding: 8px 12px; border-left: 3px solid var(--amber); background: rgba(0, 0, 0, .25); border-radius: 0 10px 10px 0; }
+.modeinfo b { color: var(--ink); }
+.chiprow { display: flex; flex-direction: column; gap: 6px; }
+.cats.scroll { flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; padding-bottom: 2px; margin-right: -12px; padding-right: 12px; }
+.cats.scroll::-webkit-scrollbar { display: none; }
+.cats.scroll .cbtn { flex: none; white-space: nowrap; }
+@media (min-width: 960px) { .cats.scroll { flex-wrap: wrap; overflow: visible; margin-right: 0; } }
+.startbar { position: sticky; bottom: calc(10px + env(safe-area-inset-bottom, 0px)); z-index: 30; padding: 10px 0 0; background: linear-gradient(transparent, var(--bg) 40%); margin-inline: -4px; padding-inline: 4px; }
+.startbar .btn.primary { box-shadow: 0 5px 0 #8A5C00, 0 0 0 4px var(--bg), 0 14px 30px rgba(0, 0, 0, .6); }
+.roomrow .rmore { flex: 1 1 100%; }
+.roomrow .rmore summary { font-family: var(--f-mono); font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); padding: 4px 0; }
+.roomrow .rjoin { flex: 1 1 100%; margin-top: 8px; }
+.pass .main { flex-direction: row; flex-wrap: wrap; align-items: center; gap: 2px 10px; }
+.pass .k { flex: 1 1 100%; }
+.pass .nm { flex: 1; min-width: 90px; }
+.pass .acts { order: 2; margin-left: 0; } .pass .meta { order: 3; flex: 1 1 100%; }
 /* Rendimiento */
 .cd { position: fixed; inset: 0; z-index: 57; display: grid; place-content: center; justify-items: center; gap: 10px; text-align: center; background: rgba(5, 7, 13, .82); }
 .cd-n { font-family: var(--f-board); font-weight: 900; font-size: clamp(120px, 38vw, 260px); line-height: .9; color: var(--amber); text-shadow: 0 0 50px rgba(255, 176, 0, .6); }
@@ -3744,6 +3769,18 @@ function headerView() {
     h('p', { class: 'sub', text: 'Nombrá países sin repetir antes de que se acabe el tiempo. El último en pie gana.' }));
 }
 
+let modeInfo = '';
+const MODES = [
+  { k: 'validate', i: '✅', n: 'Validar', d: 'Acepta tildes y nombres comunes (EEUU, Holanda) y rechaza lo que no es un país.' },
+  { k: 'letters', i: '🔤', n: 'Letra', v: 1, d: 'Cada turno toca una letra y los países tienen que empezar con ella.' },
+  { k: 'shrink', i: '⏳', n: 'Tiempo baja', d: 'Cada 3 rondas, 5 segundos menos por turno.' },
+  { k: 'jokers', i: '🃏', n: 'Comodines', d: '+10 segundos, pasar el turno y una pista, una vez cada uno por partida.' },
+  { k: 'bomb', i: '💣', n: 'Bomba', d: 'Una bomba pasa de mano en mano y explota sola, al azar.' },
+  { k: 'clues', i: '🧩', n: 'Pistas', v: 1, d: 'Te dan una pista (bandera, vecinos) y adivinás ese país.' },
+  { k: 'lightning', i: '⚡', n: 'Relámpago', d: 'Cada 4 rondas: la mitad de tiempo y un país más.' },
+  { k: 'bets', i: '🎲', n: 'Apuestas', d: 'Podés pedir 1 o 2 países más; si cumplís, ganás un comodín.' },
+  { k: 'daily', i: '📅', n: 'Desafío del día', v: 1, d: '' }
+];
 function lobbyView() {
   const mine = P.find(p => p.id === uid);
   const joinForm = mine ? null : h('div', { class: 'row', id: 'join-row' },
@@ -3799,25 +3836,17 @@ function lobbyView() {
         stepTile('t-per', '#35D6E6', 'Países por turno', 'Los que hay que decir en cada turno', String(cfg.perTurn),
           () => actConfig('perTurn', cfg.perTurn - 1), () => actConfig('perTurn', cfg.perTurn + 1), cfg.perTurn <= 1, cfg.perTurn >= 10),
         stepTile('t-sec', '#FF4D5E', 'Tiempo por turno', 'De a 5 segundos. Si se acaba y faltan países, quedás afuera', cfg.seconds + 's',
-          () => actConfig('seconds', Math.max(MIN_SEC, cfg.seconds - 5)), () => actConfig('seconds', Math.min(MAX_SEC, cfg.seconds + 5)), cfg.seconds <= MIN_SEC, cfg.seconds >= MAX_SEC),
-        swTile('t-val', '#4FE08A', 'Validar países', 'Acepta tildes y nombres comunes (EEUU, Holanda)', cfg.validate, 'validate'),
-        swTile('t-let', '#9B6BFF', 'Letra del turno', 'Cada turno toca una letra: los países tienen que empezar con ella', !!cfg.letters && cfg.validate, 'letters', !cfg.validate),
-        swTile('t-shr', '#FF8A3D', 'El tiempo baja', 'Cada 3 rondas, 5 segundos menos por turno', !!cfg.shrink, 'shrink'),
-        swTile('t-jok', '#FF6BD6', 'Comodines', 'Cada uno tiene +10 s y Pasar el turno, una vez por partida', !!cfg.jokers, 'jokers'),
-        swTile('t-bomb', '#FF4D5E', 'La bomba', 'Una bomba pasa de mano en mano y explota sola, al azar', !!cfg.bomb, 'bomb'),
-        swTile('t-clu', '#4FE08A', 'Países por pistas', 'Te dan una pista (bandera, vecinos) y adivinás el país', !!cfg.clues && cfg.validate, 'clues', !cfg.validate),
-        swTile('t-lig', '#FFD23F', 'Ronda relámpago', 'Cada 4 rondas: la mitad de tiempo y un país más', !!cfg.lightning, 'lightning'),
-        swTile('t-bet', '#FF6BD6', 'Apuestas', 'Podés pedir 1 o 2 países más; si cumplís, ganás un comodín', !!cfg.bets, 'bets'),
-        swTile('t-day', '#35D6E6', 'Desafío del día', dailyHint(), !!cfg.daily && cfg.validate, 'daily', !cfg.validate)),
-      h('div', { class: 'cattile', id: 't-cat' },
-        h('div', { class: 'tn', text: 'Categoría' }),
-        h('div', { class: 'hint', text: cfg.validate ? 'Limita los países que valen en la partida' : 'Necesita "Validar países" activado' }),
-        h('div', { class: 'cats' }, Object.keys(CATS).map(k => h('button', { class: 'cbtn', 'aria-pressed': String((cfg.mode || 'todos') === k), disabled: !cfg.validate && k !== 'todos', onclick: () => actConfig('mode', k), text: CATS[k].n })))),
-      h('div', { class: 'cattile', id: 't-teams' },
-        h('div', { class: 'tn', text: 'Equipos' }),
-        h('div', { class: 'hint', text: 'Si alguien del equipo se queda sin tiempo, sale el equipo entero' }),
-        h('div', { class: 'cats' }, [[0, 'Cada uno por su cuenta'], [2, '2 equipos'], [3, '3 equipos']].map(([n, l]) => h('button', { class: 'cbtn', 'aria-pressed': String((cfg.teams || 0) === n), onclick: () => actConfig('teams', n), text: l }))))),
-    h('button', { class: 'btn primary big', id: 'start-btn', disabled: busy || P.length < minP, onclick: actStart }, P.length < minP ? `Faltan pasajeros (mínimo ${minP})` : 'Despegar'),
+          () => actConfig('seconds', Math.max(MIN_SEC, cfg.seconds - 5)), () => actConfig('seconds', Math.min(MAX_SEC, cfg.seconds + 5)), cfg.seconds <= MIN_SEC, cfg.seconds >= MAX_SEC)),
+      h('div', { class: 'k', text: 'Modos (se pueden combinar)' }),
+      h('div', { class: 'modes', id: 'modes' }, MODES.map(m => {
+        const on = !!cfg[m.k] && (!m.v || cfg.validate), dis = m.v && !cfg.validate;
+        return h('button', { id: 'md-' + m.k, class: 'mode', 'aria-pressed': String(on), disabled: dis, onclick: () => { modeInfo = m.k; actConfig(m.k, !cfg[m.k]); } }, h('span', { class: 'mi', text: m.i }), m.n);
+      })),
+      h('div', { class: 'modeinfo', id: 'modeinfo' }, (() => { const m = MODES.find(x => x.k === modeInfo); return m ? [h('b', { text: m.n + ': ' }), (m.k === 'daily' ? dailyHint() : m.d) + (m.v && !cfg.validate ? ' (necesita "Validar")' : '')] : 'Tocá un modo para ver qué hace.'; })()),
+      h('div', { class: 'chiprow', id: 't-cat' }, h('span', { class: 'k', text: 'Categoría' }),
+        h('div', { class: 'cats scroll' }, Object.keys(CATS).map(k => h('button', { class: 'cbtn', 'aria-pressed': String((cfg.mode || 'todos') === k), disabled: !cfg.validate && k !== 'todos', onclick: () => actConfig('mode', k), text: CATS[k].n })))),
+      h('div', { class: 'chiprow', id: 't-teams' }, h('span', { class: 'k', text: 'Equipos' }),
+        h('div', { class: 'cats scroll' }, [[0, 'Cada uno por su cuenta'], [2, '2 equipos'], [3, '3 equipos']].map(([n, l]) => h('button', { class: 'cbtn', 'aria-pressed': String((cfg.teams || 0) === n), onclick: () => actConfig('teams', n), text: l }))))),
     rankingView(),
     h('details', { class: 'panel', id: 'sec-how' }, h('summary', { text: 'Cómo se juega' }),
       h('ul', {},
@@ -3825,7 +3854,8 @@ function lobbyView() {
         h('li', { text: 'En tu turno tenés que decir la cantidad de países configurada antes de que se acabe el tiempo.' }),
         h('li', { text: 'Si decís un país que ya se dijo, no cuenta: probás con otro.' }),
         h('li', { text: 'La única forma de quedar afuera es que se acabe el tiempo sin haber dicho todos tus países.' }),
-        h('li', { text: 'Cuantos más países se dicen, menos quedan. Gana la última persona en pie.' })))));
+        h('li', { text: 'Cuantos más países se dicen, menos quedan. Gana la última persona en pie.' }))),
+    h('div', { class: 'startbar', id: 'startbar' }, h('button', { class: 'btn primary big', id: 'start-btn', disabled: busy || P.length < minP, onclick: actStart }, P.length < minP ? `Faltan pasajeros (mínimo ${minP})` : `Despegar · ${P.length} a bordo`))));
 }
 
 function dailyHint() {
@@ -4032,8 +4062,11 @@ function inviteView() {
   const url = location.href.split('#')[0];
   const roomRow = h('div', { class: 'roomrow', id: 'roomrow' },
     h('div', { class: 'rleft' }, h('span', { class: 'k', text: 'Sala' }), h('b', { class: 'rcode', text: ROOM.toUpperCase() })),
-    h('button', { class: 'btn', onclick: () => goRoom(randCode()) }, 'Sala nueva'),
-    h('div', { class: 'rjoin' }, h('input', { type: 'text', id: 'room-in', placeholder: 'Código', maxlength: '12', autocomplete: 'off', autocapitalize: 'characters', onkeydown: enterTo(() => goRoom(inputVal('room-in'))) }), h('button', { class: 'btn', onclick: () => goRoom(inputVal('room-in')) }, 'Ir')));
+    h('button', { class: 'btn', onclick: () => copyLink(url) }, 'Copiar link'),
+    h('details', { class: 'rmore' }, h('summary', { text: 'Cambiar de sala' }),
+      h('div', { class: 'rjoin' }, h('button', { class: 'btn', onclick: () => goRoom(randCode()) }, 'Sala nueva'),
+        h('input', { type: 'text', id: 'room-in', placeholder: 'Código', maxlength: '12', autocomplete: 'off', autocapitalize: 'characters', onkeydown: enterTo(() => goRoom(inputVal('room-in'))) }),
+        h('button', { class: 'btn', onclick: () => goRoom(inputVal('room-in')) }, 'Ir'))));
   if (!qrCache[url]) { try { const q = qrcode(0, 'M'); q.addData(url); q.make(); qrCache[url] = q.createSvgTag({ cellSize: 4, margin: 0, scalable: true }); } catch (e) { qrCache[url] = ''; } }
   return h('section', { class: 'panel', id: 'sec-inv' }, h('h2', { text: 'Invitá a los demás' }), roomRow,
     h('div', { class: 'invite' },
