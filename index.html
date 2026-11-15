@@ -3282,7 +3282,7 @@ function nextTurn(s) {
       return nextTurn(s);
     }
   }
-  s.sdn = unitsAlive(s) === 2 ? (s.sdn || 0) + 1 : 0;
+  s.sdn = 0; // sin muerte súbita: cada turno tiene siempre el tiempo completo
   if (s.round !== prevRound && s.config.mode === 'mix') pickCat(s);
   pickLetter(s);
   pickClues(s);
