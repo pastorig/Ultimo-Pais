@@ -524,6 +524,12 @@ details ul { margin: 10px 0 0; padding-left: 20px; display: flex; flex-direction
 .pass .k { flex: 1 1 100%; }
 .pass .nm { flex: 1; min-width: 90px; }
 .pass .acts { order: 2; margin-left: 0; } .pass .meta { order: 3; flex: 1 1 100%; }
+.hdr.mini .hbar { gap: 8px; flex-wrap: nowrap; }
+.mtitle { font-family: var(--f-mono); font-weight: 800; letter-spacing: .14em; font-size: 13px; color: var(--amber); white-space: nowrap; }
+.hdr.mini .sound { padding: 6px 10px; }
+.hdr.mini .chip-st, .hdr.mini .room { white-space: nowrap; font-size: 10px; padding: 4px 8px; }
+.hdr.mini .sound { flex: none; }
+@media (max-width:420px){ .hdr.mini .room { display: none; } .mtitle { font-size: 12px; letter-spacing: .1em; } }
 /* Rendimiento */
 .cd { position: fixed; inset: 0; z-index: 57; display: grid; place-content: center; justify-items: center; gap: 10px; text-align: center; background: rgba(5, 7, 13, .82); }
 .cd-n { font-family: var(--f-board); font-weight: 900; font-size: clamp(120px, 38vw, 260px); line-height: .9; color: var(--amber); text-shadow: 0 0 50px rgba(255, 176, 0, .6); }
@@ -3761,6 +3767,10 @@ function titleView() {
 }
 function headerView() {
   const phase = { lobby: 'Embarque', playing: 'En vuelo', over: 'Aterrizaje' }[S.phase];
+  if (S.phase === 'playing') return h('header', { class: 'hdr mini' },
+    h('div', { class: 'hbar' }, h('span', { class: 'mtitle', text: 'ÚLTIMO PAÍS ✈' }), h('span', { class: 'chip-st', text: phase }), standalone ? h('span', { class: 'room', text: ROOM }) : null,
+      h('span', { class: 'grow' }),
+      h('button', { class: 'sound', 'aria-pressed': String(!muted), onclick: toggleMute, text: muted ? '🔇' : '🔊' })));
   return h('header', { class: 'hdr' + (S.phase === 'playing' ? ' compact' : '') },
     h('div', { class: 'hbar' }, h('span', { class: 'chip-st', text: phase }), standalone ? h('span', { class: 'room', text: 'Sala · ' + ROOM }) : null,
       h('span', { class: 'grow' }),
@@ -4099,7 +4109,9 @@ function keepNode(from, to) {
 }
 let rafP = false;
 function render() { if (rafP) return; rafP = true; requestAnimationFrame(() => { rafP = false; renderNow(); }); }
+let lastPh = null;
 function renderNow() {
+  if (lastPh !== S.phase) { if (lastPh) { try { window.scrollTo(0, 0); } catch (e) {} } lastPh = S.phase; }
   canActNow = false;
   const body = needSetup ? setupView() : S.phase === 'playing' ? gameView() : S.phase === 'over' ? overView() : lobbyView();
   if (S.phase === 'lobby') body.classList.add('enter');
@@ -4107,7 +4119,7 @@ function renderNow() {
   if (!connected && slow) notices.push(h('div', { class: 'notice', id: 'notice', role: 'status', text: standalone ? 'No se pudo conectar con la base de datos' + (connErr ? ' (' + connErr + ')' : '') + '. Revisá la configuración de Firebase y las reglas.' : 'No hay conexión con la partida todavía. Si el problema sigue, abrí el link con tu sesión iniciada.' }));
   if (offline && connected) notices.push(h('div', { class: 'notice conn', id: 'reconnecting', role: 'status', text: 'Se cortó la conexión. Reconectando…' }));
   if (!connected && !slow && !needSetup) notices.push(h('div', { class: 'notice conn', id: 'connecting', role: 'status', text: 'Conectando con la partida…' }));
-  const next = h('div', { id: 'app' }, h('div', { class: 'wrap' }, headerView(), notices, tickerView(), body, toastMsg ? h('div', { class: 'toast', id: 'toast', role: 'status', text: toastMsg }) : null));
+  const next = h('div', { id: 'app' }, h('div', { class: 'wrap' }, headerView(), notices, S.phase === 'playing' ? null : tickerView(), body, toastMsg ? h('div', { class: 'toast', id: 'toast', role: 'status', text: toastMsg }) : null));
   if (window.morphdom) morphdom($app, next, { onBeforeElUpdated: keepNode });
   else $app.replaceChildren(...next.childNodes);
 
