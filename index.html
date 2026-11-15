@@ -3643,7 +3643,13 @@ async function actSubmit(forId) {
   try {
     const c = JSON.parse(JSON.stringify(S)), pre = submitCountry(c, forId, raw);
     if (pre && !pre.error && pre.state && pre.state.used.length > S.used.length) {
-      setState({ ...pre.state, cur: S.cur, round: S.round, phase: S.phase, deadline: S.deadline, letter: S.letter, cat: S.cat, sdn: S.sdn, winner: S.winner, winTeam: S.winTeam, outs: S.outs });
+      const ns = pre.state, adv = ns.cur !== S.cur || ns.round !== S.round, cf = ns.config || {};
+      const rnd = cf.letters || cf.clues || cf.bomb || cf.mode === 'mix';
+      if (adv && !rnd) setState(ns);
+      else {
+        const lu = ns.used[ns.used.length - 1], gotNow = adv ? [...(S.got || []), { n: lu.n, c: lu.c }] : ns.got;
+        setState({ ...ns, got: gotNow, cur: S.cur, round: S.round, phase: S.phase, deadline: S.deadline, letter: S.letter, cat: S.cat, sdn: S.sdn, winner: S.winner, winTeam: S.winTeam, outs: S.outs, clues: S.clues, bet: S.bet, fuse: S.fuse });
+      }
       opt = true;
     }
   } catch (e) {}
