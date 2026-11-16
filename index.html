@@ -623,8 +623,8 @@ body { font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased; 
 .hist .hw { font-weight: 800; } .hist .hm { color: var(--muted); font-size: 13px; } .hist .ht { font-family: var(--f-mono); font-size: 11px; color: var(--muted); }
 
 /* ===== Sala rediseñada: puerta de embarque ===== */
-.gate { grid-template-columns: minmax(0, 1fr); position: relative; border-radius: 20px; padding: 14px 16px 16px; display: grid; gap: 12px; background: linear-gradient(180deg, #16213F, #0C1226); border: 1px solid rgba(255, 176, 0, .35); box-shadow: 0 0 0 1px rgba(255, 176, 0, .08), 0 18px 40px rgba(0, 0, 0, .55); overflow: hidden; }
-.gate::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 5px; background: repeating-linear-gradient(135deg, var(--amber) 0 10px, #1a1200 10px 20px); }
+.pgate { grid-template-columns: minmax(0, 1fr); position: relative; border-radius: 20px; padding: 14px 16px 16px; display: grid; gap: 12px; background: linear-gradient(180deg, #16213F, #0C1226); border: 1px solid rgba(255, 176, 0, .35); box-shadow: 0 0 0 1px rgba(255, 176, 0, .08), 0 18px 40px rgba(0, 0, 0, .55); overflow: hidden; }
+.pgate::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 5px; background: repeating-linear-gradient(135deg, var(--amber) 0 10px, #1a1200 10px 20px); }
 .gtop { display: flex; align-items: center; justify-content: space-between; padding-top: 8px; font-family: var(--f-mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--amber-2); }
 .gopen { display: inline-flex; align-items: center; gap: 7px; color: var(--green); }
 .gopen i { width: 8px; height: 8px; border-radius: 50%; background: var(--green); box-shadow: 0 0 10px var(--green); animation: gpulse 1.6s ease-in-out infinite; }
@@ -637,10 +637,10 @@ body { font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased; 
 .gact .btn { min-height: 50px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
 .gact .primary { font-size: 18px; }
 .bi svg { width: 20px; height: 20px; display: block; }
-.gqr summary, .gate .rmore summary { font-family: var(--f-mono); font-size: 12px; letter-spacing: .04em; color: var(--muted); cursor: pointer; padding: 4px 0; }
+.gqr summary, .pgate .rmore summary { font-family: var(--f-mono); font-size: 12px; letter-spacing: .04em; color: var(--muted); cursor: pointer; padding: 4px 0; }
 .gqr .qr { width: min(210px, 70%); margin: 10px auto 2px; background: #fff; padding: 12px; border-radius: 12px; }
-.gate .rmore { margin: 0; }
-.gate .steps { margin: 0; padding-left: 20px; display: grid; gap: 6px; }
+.pgate .rmore { margin: 0; }
+.pgate .steps { margin: 0; padding-left: 20px; display: grid; gap: 6px; }
 .crew, .plan { display: grid; gap: 12px; padding: 4px 2px; }
 .crew .ph, .plan .ph { display: flex; align-items: baseline; justify-content: space-between; }
 .crew h2, .plan h2 { margin: 0; font-family: var(--f-board); font-weight: 900; font-size: 30px; letter-spacing: .02em; text-transform: uppercase; }
@@ -700,6 +700,50 @@ body { font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased; 
 .sbin .btn.primary { flex: 1; box-shadow: 0 4px 0 #8A5C00; font-size: 20px; min-width: 0; }
 @media (max-width: 380px) { .tixgrid { gap: 8px; } .tnm { font-size: 22px; } .pre { padding: 10px 8px; } .pre .pn { font-size: 19px; } .avs { display: none; } }
 @media (min-width: 960px) { .tixgrid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .gt { width: 56px; font-size: 54px; } }
+
+/* ===== Partida compacta ===== */
+.bfoot { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.bfoot .bst { font-family: var(--f-mono); font-size: 12px; color: var(--muted); white-space: nowrap; }
+.bfoot .react { flex: 0 1 auto; padding: 3px; gap: 2px; background: rgba(255, 255, 255, .05); border-radius: 12px; }
+.bfoot .react button { flex: none; width: 36px; min-height: 34px; font-size: 20px; padding: 0; }
+.gtabs { display: none; }
+.wbtns { display: grid; gap: 8px; width: 100%; max-width: 420px; }
+@media (min-width: 560px) { .wbtns { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 959px) {
+  #view-playing #turn { order: 1; } #view-playing #board { order: 2; } #view-playing #gtabs { order: 3; }
+  #view-playing #ctrl { order: 5; }
+  .tabsec { order: 4; display: none; } .tabsec.on { display: flex; }
+  .stack.tabsec { padding: 0; } .stack.tabsec.on { display: flex; }
+  .gtabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; padding: 4px; border-radius: 14px; background: rgba(255, 255, 255, .05); border: 1px solid var(--line); }
+  .gtab { min-height: 40px; border: 0; border-radius: 10px; background: transparent; color: var(--muted); font-weight: 800; font-size: 14px; font-family: inherit; cursor: pointer; -webkit-appearance: none; appearance: none; transition: background .2s, color .2s; }
+  .gtab[aria-selected="true"] { background: var(--amber); color: var(--amber-ink); }
+  .tabsec .ph, .tabsec > h2 { display: none; }
+  .tabsec { padding: 10px; }
+  .board .bhead .k { font-size: 10px; }
+}
+@media (max-width: 559px) {
+  .winner { padding: 14px 12px 14px; gap: 6px; }
+  .winner .crown { width: 54px; } .winner::before { width: 360px; height: 360px; margin: -180px 0 0 -180px; }
+  .winner .wname { font-size: clamp(38px, 13vw, 54px); }
+  .winner .approved { font-size: 17px; padding: 2px 12px; border-width: 3px; }
+  .winner .btn.big { width: 100%; }
+  .wbtns { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; width: 100%; }
+  .wbtns .btn { padding-inline: 6px; font-size: 14px; min-height: 42px; }
+  .podium .r1 .blk { height: 84px; } .podium .r2 .blk { height: 60px; } .podium .r3 .blk { height: 44px; }
+  .board { padding: 10px 10px 8px; gap: 6px; }
+  .board .bhead { align-items: center; }
+  .flaps.big { --fw: 26px; } .rnum { font-size: 30px; }
+  .turn { padding: 10px 11px 12px; gap: 8px; }
+  .ringw { width: 66px; height: 66px; }
+  .turn .who { font-size: clamp(24px, 7.6vw, 32px); line-height: 1; }
+  #turnhead .av { --s: 44px; }
+  .jokers { gap: 6px; } .jokers .btn { min-height: 40px; padding: 4px 6px; font-size: 13px; flex: 1; }
+  .bets .btn { min-height: 36px; }
+  #inrow input { padding: 11px 12px; } #send-btn { min-height: 46px; padding-inline: 14px; }
+  #ctrl { margin-top: -4px; }
+  .bfoot .bst { display: none; } .bfoot .react { flex: 1; justify-content: space-between; } .bfoot .react button { flex: 1; width: auto; }
+  .jokers { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
 /* Rendimiento */
 .cd { position: fixed; inset: 0; z-index: 57; display: grid; place-content: center; justify-items: center; gap: 10px; text-align: center; background: rgba(5, 7, 13, .82); }
 .cd-n { font-family: var(--f-board); font-weight: 900; font-size: clamp(120px, 38vw, 260px); line-height: .9; color: var(--amber); text-shadow: 0 0 50px rgba(255, 176, 0, .6); }
@@ -3982,7 +4026,7 @@ function titleView() {
 }
 function headerView() {
   const phase = { lobby: 'Embarque', playing: 'En vuelo', over: 'Aterrizaje' }[S.phase];
-  if (S.phase === 'playing') return h('header', { class: 'hdr mini' },
+  if (S.phase !== 'lobby') return h('header', { class: 'hdr mini' },
     h('div', { class: 'hbar' }, h('span', { class: 'mtitle', text: 'ÚLTIMO PAÍS ✈' }), h('span', { class: 'chip-st', text: phase }), standalone ? h('span', { class: 'room', text: ROOM }) : null,
       h('span', { class: 'grow' }),
       h('button', { class: 'sound', 'aria-pressed': String(!muted), onclick: toggleMute, text: muted ? '🔇' : '🔊' })));
@@ -4029,7 +4073,7 @@ const ICO_X = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke
 const ICO_SHARE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3M7 8l5-5 5 5M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6"/></svg>';
 
 function gateView() {
-  if (!standalone) return h('section', { class: 'gate', id: 'sec-inv' }, h('div', { class: 'gtop' }, h('b', { text: 'Puerta de embarque' })),
+  if (!standalone) return h('section', { class: 'pgate', id: 'sec-inv' }, h('div', { class: 'gtop' }, h('b', { text: 'Puerta de embarque' })),
     h('ol', { class: 'steps' },
       h('li', { text: 'Compartí el link de esta página con el botón Compartir y dales permiso de Contributor.' }),
       h('li', { text: 'Cada uno lo abre en su celular, escribe su nombre y toca Entrar.' }),
@@ -4037,7 +4081,7 @@ function gateView() {
   const url = location.href.split('#')[0];
   if (!qrCache[url]) { try { const q = qrcode(0, 'M'); q.addData(url); q.make(); qrCache[url] = q.createSvgTag({ cellSize: 4, margin: 0, scalable: true }); } catch (e) { qrCache[url] = ''; } }
   const code = ROOM.toUpperCase();
-  return h('section', { class: 'gate', id: 'sec-inv' },
+  return h('section', { class: 'pgate', id: 'sec-inv' },
     h('div', { class: 'gtop' }, h('b', { text: 'Puerta de embarque' }), h('span', { class: 'gopen' }, h('i'), 'Abierta')),
     h('div', { class: 'gcode', id: 'gcode', 'aria-label': 'Sala ' + code, style: '--n:' + code.length }, [...code].map((ch, k) => h('span', { class: 'gt', id: 'gt' + k, text: ch }))),
     h('div', { class: 'gact' },
@@ -4131,7 +4175,7 @@ function lobbyView() {
   const stack = P.slice(0, 5).map((p, i) => avatar(p.name, i, 30, p.fl));
   return h('div', { class: 'stack enter cols', id: 'view-lobby' },
     h('div', { class: 'colL stack' }, gateView(), crewView()),
-    h('div', { class: 'colR stack' }, plan, rankingView(),
+    h('div', { class: 'colR stack' }, plan,
       h('details', { class: 'panel', id: 'sec-how' }, h('summary', { text: 'Cómo se juega' }),
         h('ul', {},
           h('li', { text: 'El orden de los turnos se sortea.' }),
@@ -4212,6 +4256,8 @@ function updateMap() {
   const g = document.getElementById('mdyn'); if (g) g.innerHTML = dynMapHtml();
 }
 
+let gtab = 'score';
+const REACT_BAR = () => h('div', { class: 'react', id: 'react' }, ['🔥', '😱', '😂', '👏', '🤯', '💀'].map(e => h('button', { 'aria-label': 'Reaccionar ' + e, onmousedown: ev => ev.preventDefault(), onclick: () => actReact(e), text: e })));
 function gameView() {
   const cp = S.roster[S.cur];
   const myTurn = cp && cp.id === uid;
@@ -4230,7 +4276,7 @@ function gameView() {
       h('div', {}, h('div', { class: 'k', text: S.config.validate ? (catOn ? 'Sin visitar · ' + CATS[S.cat].n : 'Destinos sin visitar') : 'Destinos visitados' }), flapsEl),
       h('div', { class: 'bstat' }, h('div', { class: 'k', text: 'Ronda' }), h('div', { class: 'rnum', text: String(S.round) }))),
     h('div', { id: 'mapwrap', 'data-keep': true }),
-    h('div', { class: 'foot' }, h('span', { text: usedN + ' visitados' }), h('span', { text: S.roster.filter(p => p.alive).length + ' en pie' })));
+    h('div', { class: 'bfoot' }, h('span', { class: 'bst', text: usedN + ' visitados · ' + S.roster.filter(p => p.alive).length + ' en pie' }), REACT_BAR()));
 
   const slots = h('div', { class: 'slots', id: 'slots' }, Array.from({ length: need }, (_, i) => {
     const g = got[i];
@@ -4264,30 +4310,31 @@ function gameView() {
       formErr ? h('div', { class: 'err', role: 'alert', text: formErr }) : null,
       S.config.bets && !got.length && !S.bet ? h('div', { class: 'bets', id: 'bets' }, h('span', { class: 'small muted', text: 'Apostar:' }), [1, 2].map(n => h('button', { class: 'btn jk', disabled: busy, onmousedown: ev => ev.preventDefault(), onclick: () => actBet(cp.id, n) }, '+' + n + (n > 1 ? ' países' : ' país')))) : null,
       (S.config.jokers || (cp && cp.jk && (cp.jk.t || cp.jk.p || cp.jk.h))) && cp && cp.jk ? h('div', { class: 'jokers', id: 'jokers' },
-        h('button', { class: 'btn jk', disabled: busy || !cp.jk.t, onmousedown: ev => ev.preventDefault(), onclick: () => actJoker(cp.id, 't') }, '+10 segundos'),
+        h('button', { class: 'btn jk', disabled: busy || !cp.jk.t, onmousedown: ev => ev.preventDefault(), onclick: () => actJoker(cp.id, 't') }, '+10 s'),
         h('button', { class: 'btn jk', disabled: busy || !cp.jk.h, onmousedown: ev => ev.preventDefault(), onclick: () => actHint(cp.id) }, 'Pista'),
-        h('button', { class: 'btn jk', disabled: busy || !cp.jk.p, onmousedown: ev => ev.preventDefault(), onclick: () => actJoker(cp.id, 'p') }, 'Pasar turno')) : null)
+        h('button', { class: 'btn jk', disabled: busy || !cp.jk.p, onmousedown: ev => ev.preventDefault(), onclick: () => actJoker(cp.id, 'p') }, 'Pasar')) : null)
       : h('div', { class: 'thinking', id: 'thinking' }, avatar(cp ? cp.name : '', cp && cp.ci, 36, cp && cp.fl),
         h('div', { class: 'tk' }, h('b', { text: cp ? cp.name : '' }), h('span', { id: 'think-label', text: ' está respondiendo' })),
         h('span', { class: 'dots3', html: '<i></i><i></i><i></i>' })),
     h('button', { class: 'btn danger', id: 'timeout-btn', hidden: true, onclick: () => actTimeout(S.seq) }, 'Se acabó el tiempo: sacar del juego'));
   shakeNext = false;
 
-  const reactBar = h('div', { class: 'react', id: 'react' }, ['🔥', '😱', '😂', '👏', '🤯', '💀'].map(e => h('button', { 'aria-label': 'Reaccionar ' + e, onmousedown: ev => ev.preventDefault(), onclick: () => actReact(e), text: e })));
-  const players = h('section', { class: 'panel', id: 'sec-pl' }, h('div', { class: 'ph' }, h('h2', { text: 'Marcador' }), h('span', { class: 'k', text: 'En vivo' })), scoreboardView());
+  const tabsBar = h('div', { class: 'gtabs', id: 'gtabs', role: 'tablist' }, [['score', 'Marcador'], ['pass', 'Pasaporte'], ['log', 'Jugadas']].map(([k, l]) =>
+    h('button', { id: 'gtab-' + k, role: 'tab', class: 'gtab', 'aria-selected': String(gtab === k), onclick: () => { gtab = k; render(); }, text: l + (k === 'pass' ? ' · ' + usedN : '') })));
+  const players = h('section', { class: 'panel tabsec' + (gtab === 'score' ? ' on' : ''), id: 'sec-pl' }, h('div', { class: 'ph' }, h('h2', { text: 'Marcador' }), h('span', { class: 'k', text: 'En vivo' })), scoreboardView());
   const usedList = S.used.slice().reverse();
-  const used = h('section', { class: 'panel', id: 'sec-used' },
+  const used = h('section', { class: 'panel tabsec' + (gtab === 'pass' ? ' on' : ''), id: 'sec-used' },
     h('div', { class: 'ph' }, h('h2', { text: 'Mi pasaporte' }), h('span', { class: 'k', text: usedN + ' sellos' })),
     usedN ? h('div', { class: 'book', id: 'chips' }, usedList.map(u => stampView(u)))
       : h('div', { class: 'book', id: 'chips' }, [0, 1, 2].map(i => h('span', { class: 'stamp ghost', style: `--rot:${[-4, 3, -2][i]}deg` }, h('span', { class: 'fl', text: '?' }), h('span', { class: 'sn', text: 'Sin sello' })))));
-  const log = h('section', { class: 'panel', id: 'sec-log' },
+  const log = h('section', { class: 'panel tabsec' + (gtab === 'log' ? ' on' : ''), id: 'sec-log' },
     h('h2', { text: 'Jugadas' }),
     h('ul', { class: 'log', id: 'log' }, S.log.slice(-8).reverse().map(l => h('li', { id: 'lg-' + l.i, class: l.k }, h('span', { class: 'r', text: 'R' + l.r }), l.t))));
   const ctrl = h('div', { class: 'row', id: 'ctrl', style: 'justify-content:center; flex-wrap:wrap' },
     confirmAct === 'reset'
       ? [h('button', { class: 'btn danger solid', onclick: () => actReset() }, 'Sí, terminar partida'), h('button', { class: 'btn', onclick: () => { confirmAct = null; render(); } }, 'Cancelar')]
       : h('button', { class: 'btn ghost', onclick: () => { confirmAct = 'reset'; render(); } }, 'Terminar partida'));
-  return h('div', { class: 'stack enter cols', id: 'view-playing' }, h('div', { class: 'colL stack' }, board, used, log), h('div', { class: 'colR stack' }, turn, reactBar, players, ctrl));
+  return h('div', { class: 'stack enter cols', id: 'view-playing' }, h('div', { class: 'colL stack' }, board, used, log), h('div', { class: 'colR stack' }, turn, tabsBar, players, ctrl));
 }
 function stampView(u) {
   const hs = hash(u.k);
@@ -4321,31 +4368,38 @@ function statsView() {
   return h('section', { class: 'panel', id: 'sec-stats' }, h('h2', { text: 'Estadísticas' }),
     h('div', { class: 'stats' }, tiles.map((t, i) => h('div', { class: 'stat', id: 'st-' + i, style: `--pc:${colorOf(t[1].ci)}` }, h('div', { class: 'k', text: t[0] }), h('div', { class: 'sv', text: t[1].name }), h('div', { class: 'ss', text: t[2] })))));
 }
+let otab = 'map';
 function overView() {
   const w = S.roster.find(p => p.id === S.winner), team = S.winTeam >= 0 && S.config.teams;
   const wl = team ? S.roster.filter(p => p.tm === S.winTeam).map(p => p.name).join(' · ') : '';
+  const tabsBar = h('div', { class: 'gtabs', id: 'otabs', role: 'tablist' }, [['map', 'Mapa'], ['pass', 'Sellos · ' + S.used.length], ['data', 'Datos']].map(([k, l]) =>
+    h('button', { id: 'otab-' + k, role: 'tab', class: 'gtab', 'aria-selected': String(otab === k), onclick: () => { otab = k; render(); }, text: l })));
+  const on = k => 'tabsec' + (otab === k ? ' on' : '');
   return h('div', { class: 'stack enter cols', id: 'view-over' },
     h('div', { class: 'colL stack' },
-    h('section', { class: 'panel winner', id: 'sec-win' },
-      h('div', { html: CROWN, style: 'display:contents' }),
-      w ? avatar(team ? teamName(S.winTeam) : w.name, w.ci, 84, team ? null : w.fl) : null,
-      h('div', { class: 'k', text: team ? wl : 'Último en pie' }),
-      h('div', { class: 'wname', text: team ? 'Equipo ' + teamName(S.winTeam) : (w ? w.name : 'Nadie') }),
-      h('div', { class: 'approved', text: 'Aprobado' }),
-      h('p', { class: 'muted', text: `${S.used.length} países dichos en ${S.round} ${S.round === 1 ? 'ronda' : 'rondas'}.` }),
-      h('button', { class: 'btn primary big', id: 'again-btn', disabled: busy || P.length < 2, onclick: actStart }, 'Revancha'),
-      h('button', { class: 'btn', id: 'share-btn', onclick: actShare }, 'Compartir imagen'),
-      h('button', { class: 'btn', id: 'lobby-btn', disabled: busy, onclick: () => actReset() }, 'Volver a la sala')),
-    h('section', { class: 'panel', id: 'sec-map' }, h('h2', { text: 'Mapa de la partida' }), h('div', { id: 'mapwrap', 'data-keep': true }),
-      h('div', { class: 'foot' }, h('span', { text: S.used.length + ' países visitados' }), h('span', { text: S.round + (S.round === 1 ? ' ronda' : ' rondas') }))),
-    statsView(),
-    S.config.teams ? null : podiumView(),
-    rankingView()),
+      h('section', { class: 'panel winner', id: 'sec-win' },
+        h('div', { html: CROWN, style: 'display:contents' }),
+        w ? avatar(team ? teamName(S.winTeam) : w.name, w.ci, 72, team ? null : w.fl) : null,
+        h('div', { class: 'k', text: team ? wl : 'Último en pie' }),
+        h('div', { class: 'wname', text: team ? 'Equipo ' + teamName(S.winTeam) : (w ? w.name : 'Nadie') }),
+        h('div', { class: 'approved', text: 'Aprobado' }),
+        h('p', { class: 'muted', text: `${S.used.length} países dichos en ${S.round} ${S.round === 1 ? 'ronda' : 'rondas'}.` }),
+        h('button', { class: 'btn primary big', id: 'again-btn', disabled: busy || P.length < 2, onclick: actStart }, 'Revancha'),
+        h('div', { class: 'wbtns' },
+          h('button', { class: 'btn', id: 'share-btn', onclick: actShare }, 'Compartir imagen'),
+          h('button', { class: 'btn', id: 'lobby-btn', disabled: busy, onclick: () => actReset() }, 'Volver a la sala'))),
+      S.config.teams ? null : podiumView()),
     h('div', { class: 'colR stack' },
-    h('section', { class: 'panel', id: 'sec-pl' }, h('h2', { text: 'Pasajeros' }), playerChips()),
-    S.used.length ? h('section', { class: 'panel', id: 'sec-used' }, h('h2', { text: 'Pasaporte' }), h('div', { class: 'book' }, S.used.map(u => stampView(u)))) : null,
-    h('section', { class: 'panel', id: 'sec-log' }, h('h2', { text: 'Cómo terminó' }),
-      h('ul', { class: 'log' }, S.log.slice(-12).reverse().map(l => h('li', { id: 'lg-' + l.i, class: l.k }, h('span', { class: 'r', text: 'R' + l.r }), l.t))))));
+      tabsBar,
+      h('section', { class: 'panel ' + on('map'), id: 'sec-map' }, h('h2', { text: 'Mapa de la partida' }), h('div', { id: 'mapwrap', 'data-keep': true }),
+        h('div', { class: 'foot' }, h('span', { text: S.used.length + ' países visitados' }), h('span', { text: S.round + (S.round === 1 ? ' ronda' : ' rondas') }))),
+      h('section', { class: 'panel ' + on('pass'), id: 'sec-used' }, h('h2', { text: 'Pasaporte' }),
+        S.used.length ? h('div', { class: 'book' }, S.used.map(u => stampView(u))) : h('p', { class: 'muted', text: 'No se dijo ningún país.' })),
+      h('div', { class: 'stack ' + on('data'), id: 'sec-data' },
+        statsView(),
+        h('section', { class: 'panel', id: 'sec-pl' }, h('h2', { text: 'Marcador final' }), scoreboardView()),
+        h('section', { class: 'panel', id: 'sec-log' }, h('h2', { text: 'Cómo terminó' }),
+          h('ul', { class: 'log' }, S.log.slice(-12).reverse().map(l => h('li', { id: 'lg-' + l.i, class: l.k }, h('span', { class: 'r', text: 'R' + l.r }), l.t)))))));
 }
 
 function tickerView() {
@@ -4421,7 +4475,7 @@ function renderNow() {
   if (!connected && slow) notices.push(h('div', { class: 'notice', id: 'notice', role: 'status', text: standalone ? 'No se pudo conectar con la base de datos' + (connErr ? ' (' + connErr + ')' : '') + '. Revisá la configuración de Firebase y las reglas.' : 'No hay conexión con la partida todavía. Si el problema sigue, abrí el link con tu sesión iniciada.' }));
   if (offline && connected) notices.push(h('div', { class: 'notice conn', id: 'reconnecting', role: 'status', text: 'Se cortó la conexión. Reconectando…' }));
   if (!connected && !slow && !needSetup) notices.push(h('div', { class: 'notice conn', id: 'connecting', role: 'status', text: 'Conectando con la partida…' }));
-  const next = h('div', { id: 'app' }, h('div', { class: 'wrap' }, headerView(), notices, S.phase === 'playing' ? null : tickerView(), body, toastMsg ? h('div', { class: 'toast', id: 'toast', role: 'status', text: toastMsg }) : null));
+  const next = h('div', { id: 'app' }, h('div', { class: 'wrap' }, headerView(), notices, S.phase !== 'lobby' ? null : tickerView(), body, toastMsg ? h('div', { class: 'toast', id: 'toast', role: 'status', text: toastMsg }) : null));
   if (window.morphdom) morphdom($app, next, { onBeforeElUpdated: keepNode });
   else $app.replaceChildren(...next.childNodes);
 
