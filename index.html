@@ -1,4 +1,4 @@
-<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-content"><meta name="theme-color" content="#05070D"><meta name="description" content="Último País: nombrá países sin repetir antes de que se acabe el tiempo. Jugá con tus amigos, cada uno desde su celular."><meta property="og:title" content="Último País"><meta property="og:description" content="Nombrá países sin repetir. El último en pie gana. Cada uno juega desde su celular."><meta property="og:image" content="/icon-512.png"><meta name="color-scheme" content="dark"><link rel="manifest" href="/manifest.webmanifest"><link rel="apple-touch-icon" href="/icon-180.png"><link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js"><link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.14.1/firebase-database.js"><link rel="preconnect" href="https://www.gstatic.com" crossorigin><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><title>Último País</title><link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E%F0%9F%8C%8D%3C/text%3E%3C/svg%3E"><style>html{-webkit-text-size-adjust:100%;text-size-adjust:100%}body{margin:0}[hidden]{display:none!important}</style></head><body>
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-content"><meta name="theme-color" content="#05070D" media="(prefers-color-scheme: dark)"><meta name="theme-color" content="#EEF1F7" media="(prefers-color-scheme: light)"><meta name="description" content="Último País: nombrá países sin repetir antes de que se acabe el tiempo. Jugá con tus amigos, cada uno desde su celular."><meta property="og:title" content="Último País"><meta property="og:description" content="Nombrá países sin repetir. El último en pie gana. Cada uno juega desde su celular."><meta property="og:image" content="/icon-512.png"><meta name="color-scheme" content="dark light"><link rel="manifest" href="/manifest.webmanifest"><link rel="apple-touch-icon" href="/icon-180.png"><link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js"><link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.14.1/firebase-database.js"><link rel="preconnect" href="https://www.gstatic.com" crossorigin><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><title>Último País</title><link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E%F0%9F%8C%8D%3C/text%3E%3C/svg%3E"><style>html{-webkit-text-size-adjust:100%;text-size-adjust:100%}body{margin:0}[hidden]{display:none!important}</style></head><body>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -608,6 +608,19 @@ body { font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased; 
 .pass.edit .flagpick { flex: 0 0 100%; padding: 0 10px 10px; }
 .pass.edit .main { flex-wrap: nowrap; }
 .pass.edit .main input { min-width: 0; flex: 1; }
+.sb { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 6px; }
+.sbr { display: grid; grid-template-columns: 18px 28px minmax(0, 1fr) minmax(40px, 38%) 28px; align-items: center; gap: 8px; padding: 6px 8px; border-radius: 12px; background: rgba(255, 255, 255, .04); border: 1px solid transparent; transition: background-color .3s, border-color .3s; }
+.sbr.cur { border-color: var(--pc); background: color-mix(in srgb, var(--pc) 14%, transparent); }
+.sbr.out { opacity: .45; } .sbr.out .sbn { text-decoration: line-through; }
+.sbp { font-family: var(--f-mono); font-size: 12px; color: var(--muted); text-align: center; }
+.sbn { font-weight: 800; font-size: 15px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sbb { height: 8px; border-radius: 8px; background: rgba(255, 255, 255, .08); overflow: hidden; }
+.sbb i { display: block; height: 100%; border-radius: 8px; background: var(--pc); box-shadow: 0 0 8px var(--pc); transition: width .5s cubic-bezier(.2, .8, .2, 1); }
+.sbc { font-family: var(--f-mono); font-weight: 700; font-size: 15px; text-align: right; }
+.histbox { margin-top: 14px; padding-top: 10px; border-top: 1px dashed var(--line-2); }
+.hist { list-style: none; margin: 6px 0 0; padding: 0; display: grid; gap: 6px; }
+.hist li { display: grid; grid-template-columns: auto 1fr auto; gap: 10px; align-items: baseline; font-size: 14px; }
+.hist .hw { font-weight: 800; } .hist .hm { color: var(--muted); font-size: 13px; } .hist .ht { font-family: var(--f-mono); font-size: 11px; color: var(--muted); }
 /* Rendimiento */
 .cd { position: fixed; inset: 0; z-index: 57; display: grid; place-content: center; justify-items: center; gap: 10px; text-align: center; background: rgba(5, 7, 13, .82); }
 .cd-n { font-family: var(--f-board); font-weight: 900; font-size: clamp(120px, 38vw, 260px); line-height: .9; color: var(--amber); text-shadow: 0 0 50px rgba(255, 176, 0, .6); }
@@ -638,6 +651,49 @@ body { font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased; 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
   #bgfx .fflag, #bgfx .star, .radar { display: none; }
+}
+
+/* Tema claro automático (según el celular). Los tableros de aeropuerto siguen oscuros. */
+@media (prefers-color-scheme: light) {
+  :root { color-scheme: light; --bg: #EEF1F7; --panel: #FFFFFF; --panel-2: #F6F8FC; --line: rgba(15, 25, 60, .13); --line-2: rgba(15, 25, 60, .26); --ink: #121A33; --muted: #5A6483; --amber-2: #B87800; }
+  html, body { background: var(--bg); }
+  #bgfx { background: radial-gradient(800px 460px at 100% -8%, color-mix(in srgb, var(--bgc, #FFB000) 22%, transparent), transparent 62%), radial-gradient(640px 480px at -12% 38%, rgba(53, 214, 230, .16), transparent 62%), linear-gradient(#F3F5FA, #E6EBF4); }
+  #bgfx::before { opacity: .25; }
+  .panel { box-shadow: 0 10px 28px rgba(30, 45, 90, .12), inset 0 1px 0 #fff; }
+  input[type="text"] { background: #fff; }
+  .btn { background: #fff; }
+  .btn.primary { background-color: var(--amber); }
+  .btn.ghost { background: transparent; }
+  .btn.ghost:hover { background: rgba(15, 25, 60, .06); }
+  .pass { background: linear-gradient(135deg, #FFFFFF, #EDF1F9); box-shadow: 0 6px 16px rgba(30, 45, 90, .14); }
+  .tile { background: #F1F4FA; }
+  .mode { background: #fff; }
+  .mode[aria-pressed="true"] { background: #FFF3D1; border-color: var(--amber); }
+  .mode[aria-pressed="true"] .mi { color: #B87800; }
+  .modeinfo, .sbr, .stamp { background-color: rgba(15, 25, 60, .05); }
+  .stamp { background: color-mix(in srgb, var(--pc) 12%, #fff); text-shadow: none; }
+  .stamp:not(.ghost)::after { background: radial-gradient(circle, #fff 0 .8px, transparent 1.1px) 0 0 / 7px 7px, radial-gradient(circle, #fff 0 .6px, transparent 1px) 3px 4px / 11px 9px; opacity: .6; }
+  .sbb, .flagpick .fpb { background: rgba(15, 25, 60, .08); }
+  .slot.done { background: color-mix(in srgb, var(--pc) 12%, #fff); }
+  .turn { background: radial-gradient(420px 200px at 0% 0%, color-mix(in srgb, var(--pc) 20%, transparent), transparent 70%), linear-gradient(var(--panel-2), var(--panel)) padding-box, conic-gradient(from var(--ang), var(--pc), transparent 28%, var(--pc) 55%, transparent 80%, var(--pc)) border-box; }
+  .map .sph { fill: rgba(70, 150, 220, .22); stroke: rgba(40, 110, 180, .45); }
+  .map .grat { stroke: rgba(40, 100, 170, .14); }
+  .map .ld { fill: rgba(255, 255, 255, .92); stroke: rgba(40, 70, 120, .35); }
+  .map .lu { stroke: #1b2440; }
+  .board { background: radial-gradient(120% 70% at 50% 62%, rgba(53, 214, 230, .16), transparent 62%), linear-gradient(180deg, var(--panel-2), var(--panel)); }
+  .pchip .n, .sbn, .hist .hw { color: var(--ink); }
+  .cnt { background: #121A33; color: #fff; }
+  #tuto { background: rgba(230, 236, 247, .8); }
+  #splash { background: radial-gradient(ellipse at 50% 40%, #FFFFFF, #E4E9F3 70%); }
+  .sp-t { color: #121A33; } .sp-bar { background: rgba(15, 25, 60, .12); }
+  #tbar { background: rgba(15, 25, 60, .08); }
+  ::selection { color: #121A33; }
+  .stamp, .slot.done { color: color-mix(in srgb, var(--pc) 58%, #121A33); }
+  .mtitle { color: #A86B00; }
+  .roomrow, .rank li { background: #F1F4FA; }
+  .rcode, .room { color: #0A8FA0; } .room { border-color: #0A8FA0; }
+  .rank .rpos { color: #B87800; }
+  .k, .ph .k { color: var(--muted); }
 }
 </style>
 
@@ -3303,6 +3359,7 @@ function nextTurn(s) {
     s.winTeam = s.config.teams && alive[0] ? alive[0].tm : -1;
     s.wins = s.wins || {};
     alive.forEach(p => { const w = s.wins[p.id] || { w: 0 }; s.wins[p.id] = { n: p.name, w: (w.w || 0) + 1 }; });
+    { const lb = s.winTeam >= 0 ? 'Equipo ' + teamName(s.winTeam) : (alive[0] ? alive[0].name : ''); if (lb) s.hist = [{ w: lb, n: s.used.length, r: s.round, t: nowS() }, ...(s.hist || [])].slice(0, 8); }
     const label = s.winTeam >= 0 ? 'Equipo ' + teamName(s.winTeam) : (alive[0] ? alive[0].name : '');
     addLog(s, 'win', alive[0] ? `Ganó ${label}` : 'Nadie ganó', { w: label });
     if (s.config.daily && s.dayCat !== undefined) {
@@ -3461,6 +3518,18 @@ sfx.turnFor = (ci, mine) => {
   if (mine) { vib([60, 40, 90]); tone(f, .12, 0, 'triangle', .08); tone(f * 1.25, .12, .1, 'triangle', .08); tone(f * 1.5, .2, .2, 'triangle', .08); }
   else tone(f, .12, 0, 'sine', .035);
 };
+
+/* Sonido propio por continente */
+(function () {
+  const REG = { E: [[523, 'sine'], [659, 'sine', .07], [784, 'sine', .14]], A: [[330, 'triangle'], [392, 'triangle', .07], [494, 'triangle', .14]], M: [[587, 'triangle'], [740, 'triangle', .08], [880, 'sine', .15]], S: [[523, 'sine'], [587, 'sine', .08], [784, 'sine', .16]], O: [[698, 'sine'], [880, 'sine', .08], [1047, 'sine', .16]] };
+  const base = sfx.ok;
+  sfx.ok = function (code) {
+    const at = (typeof MAPDATA !== 'undefined' && code && MAPDATA.at && MAPDATA.at[code]) || '';
+    const r = 'EAMSO'.split('').find(x => at.includes(x));
+    if (!r) return base();
+    vib(25); REG[r].forEach(n => tone(n[0], .15, n[2] || 0, n[1], .09));
+  };
+})();
 function burstAt(el) {
   if (!el || reduced()) return;
   const r = el.getBoundingClientRect(), fx = document.getElementById('fx');
@@ -3590,7 +3659,7 @@ function setState(next) {
     if (next.used.length > seenUsed) {
       next.used.slice(seenUsed).forEach(u => fresh.add(u.k));
       seenUsed = next.used.length; burstTarget = true;
-      if (next.phase !== 'lobby') sfx.ok();
+      if (next.phase !== 'lobby') sfx.ok(next.used[next.used.length - 1] && next.used[next.used.length - 1].c);
     }
     next.log.filter(l => (l.i || 0) > seenLog).forEach(l => {
       if (l.k === 'out') { showOut(l.w, l.why); sfx.out(); }
@@ -3682,14 +3751,30 @@ function actStart() {
     return { state: s };
   });
 }
+async function runQ(fn) {
+  if (!stateRef) { toast(offlineMsg()); return null; }
+  try {
+    const res = await mutate(fn);
+    if (res && res.error) { formErr = res.error; shakeNext = true; sfx.bad(); render(); }
+    else if (formErr) { formErr = ''; render(); }
+    return res;
+  } catch (e) { toast('No se pudo guardar. Probá de nuevo.'); return null; }
+}
 async function actSubmit(forId) {
   const el = document.getElementById('turn-input');
   const raw = el ? el.value : '';
+  const before = S; let opt = false, pre = null;
+  try { pre = submitCountry(JSON.parse(JSON.stringify(S)), forId, raw); } catch (e) { pre = null; }
+  // Error local: se avisa al instante, sin ir a la base de datos y sin bloquear nada.
+  if (pre && pre.error) {
+    formErr = pre.error; shakeNext = true; sfx.bad();
+    if (el && !pre.keep) el.value = '';
+    render();
+    const e1 = document.getElementById('turn-input'); if (e1) { e1.focus(); if (pre.keep) e1.select(); }
+    return pre;
+  }
   if (el) el.value = '';
-  // Respuesta inmediata: mostramos el país ya, y la base de datos lo confirma después.
-  const before = S; let opt = false;
   try {
-    const c = JSON.parse(JSON.stringify(S)), pre = submitCountry(c, forId, raw);
     if (pre && !pre.error && pre.state && pre.state.used.length > S.used.length) {
       const ns = pre.state, adv = ns.cur !== S.cur || ns.round !== S.round, cf = ns.config || {};
       const rnd = cf.letters || cf.clues || cf.bomb || cf.mode === 'mix';
@@ -3701,10 +3786,10 @@ async function actSubmit(forId) {
       opt = true;
     }
   } catch (e) {}
-  const res = await run(s => submitCountry(s, forId, raw));
+  const res = await runQ(s => submitCountry(s, forId, raw));
   if (opt && (!res || res.error) && S.used.length > before.used.length) setState(before);
   const e2 = document.getElementById('turn-input');
-  if (e2) { if (res && res.error && res.keep) { e2.value = raw; e2.select(); } e2.focus(); }
+  if (e2) { if (res && res.error && res.keep && !e2.value) { e2.value = raw; e2.select(); } e2.focus(); }
 }
 function actHint(forId) {
   run(s => {
@@ -3760,7 +3845,7 @@ function actTimeout(expectSeq) {
 }
 function actReset() {
   confirmAct = null;
-  run(s => ({ state: { ...defaultState(), config: s.config, wins: s.wins || {}, daily: s.daily || {}, seq: s.seq } }));
+  run(s => ({ state: { ...defaultState(), config: s.config, hist: s.hist || [], wins: s.wins || {}, daily: s.daily || {}, seq: s.seq } }));
 }
 
 /* Pantalla encendida mientras se juega */
@@ -3975,9 +4060,23 @@ function dailyHint() {
 }
 function rankingView() {
   const w = Object.values(S.wins || {}).filter(x => x && x.w).sort((a, b) => b.w - a.w);
-  if (!w.length) return null;
+  const hs = (S.hist || []).slice(0, 5);
+  if (!w.length && !hs.length) return null;
+  const ago = t => { const m = Math.max(0, Math.round((nowS() - t) / 60000)); return m < 2 ? 'recién' : m < 60 ? 'hace ' + m + ' min' : m < 1440 ? 'hace ' + Math.round(m / 60) + ' h' : 'hace ' + Math.round(m / 1440) + ' d'; };
   return h('section', { class: 'panel', id: 'sec-rank' }, h('div', { class: 'ph' }, h('h2', { text: 'Ranking' }), h('span', { class: 'k', text: 'Partidas ganadas' })),
-    h('ol', { class: 'rank' }, w.slice(0, 8).map((x, i) => h('li', { id: 'rk-' + i }, h('span', { class: 'rpos', text: String(i + 1) }), h('span', { class: 'rn', text: x.n }), h('span', { class: 'rw', text: x.w + (x.w === 1 ? ' victoria' : ' victorias') })))));
+    h('ol', { class: 'rank' }, w.slice(0, 8).map((x, i) => h('li', { id: 'rk-' + i }, h('span', { class: 'rpos', text: String(i + 1) }), h('span', { class: 'rn', text: x.n }), h('span', { class: 'rw', text: x.w + (x.w === 1 ? ' victoria' : ' victorias') })))),
+    hs.length ? h('div', { class: 'histbox', id: 'hist' }, h('div', { class: 'k', text: 'Últimas partidas' }),
+      h('ul', { class: 'hist' }, hs.map((x, i) => h('li', { id: 'hs-' + i }, h('span', { class: 'hw', text: '🏆 ' + x.w }), h('span', { class: 'hm', text: x.n + ' países · ' + x.r + (x.r === 1 ? ' ronda' : ' rondas') }), h('span', { class: 'ht', text: ago(x.t) }))))) : null);
+}
+function scoreboardView() {
+  const cnt = p => S.used.filter(u => u.ci === p.ci).length;
+  const rows = S.roster.map((p, i) => ({ p, i, n: cnt(p) })).sort((a, b) => (b.p.alive - a.p.alive) || (b.n - a.n) || (a.i - b.i));
+  const max = Math.max(1, ...rows.map(r => r.n));
+  return h('ol', { class: 'sb', id: 'sb' }, rows.map((r, k) => h('li', { id: 'sb-' + r.p.id, class: 'sbr' + (!r.p.alive ? ' out' : '') + (r.p.alive && r.i === S.cur && S.phase === 'playing' ? ' cur' : ''), style: `--pc:${colorOf(r.p.ci)}` },
+    h('span', { class: 'sbp', text: String(k + 1) }), avatar(r.p.name, r.p.ci, 28, r.p.fl),
+    h('span', { class: 'sbn', text: r.p.name }),
+    h('span', { class: 'sbb' }, h('i', { style: `width:${Math.round(r.n / max * 100)}%` })),
+    h('span', { class: 'sbc', text: String(r.n) }))));
 }
 function playerChips() {
   return h('div', { class: 'pstrip' }, S.roster.map((p, i) =>
@@ -4069,7 +4168,7 @@ function gameView() {
       h('div', { class: 'row' + (shakeNext ? ' shake' : ''), id: 'inrow' },
         h('input', { type: 'text', id: 'turn-input', placeholder: (S.clues && S.clues.length) ? `Adiviná el país ${Math.min(got.length + 1, need)} de ${need}` : `País ${Math.min(got.length + 1, need)} de ${need}`, autocomplete: 'off', autocapitalize: 'words', autocorrect: 'off', spellcheck: 'false', enterkeyhint: 'send',
           oninput: sendTyping, onkeydown: enterTo(() => actSubmit(cp.id)) }),
-        h('button', { class: 'btn primary', id: 'send-btn', style: 'font-size:20px', disabled: busy, onmousedown: ev => ev.preventDefault(), onclick: () => actSubmit(cp.id) }, 'Enviar')),
+        h('button', { class: 'btn primary', id: 'send-btn', style: 'font-size:20px', onmousedown: ev => ev.preventDefault(), onclick: () => actSubmit(cp.id) }, 'Enviar')),
       formErr ? h('div', { class: 'err', role: 'alert', text: formErr }) : null,
       S.config.bets && !got.length && !S.bet ? h('div', { class: 'bets', id: 'bets' }, h('span', { class: 'small muted', text: 'Apostar:' }), [1, 2].map(n => h('button', { class: 'btn jk', disabled: busy, onmousedown: ev => ev.preventDefault(), onclick: () => actBet(cp.id, n) }, '+' + n + (n > 1 ? ' países' : ' país')))) : null,
       (S.config.jokers || (cp && cp.jk && (cp.jk.t || cp.jk.p || cp.jk.h))) && cp && cp.jk ? h('div', { class: 'jokers', id: 'jokers' },
@@ -4083,7 +4182,7 @@ function gameView() {
   shakeNext = false;
 
   const reactBar = h('div', { class: 'react', id: 'react' }, ['🔥', '😱', '😂', '👏', '🤯', '💀'].map(e => h('button', { 'aria-label': 'Reaccionar ' + e, onmousedown: ev => ev.preventDefault(), onclick: () => actReact(e), text: e })));
-  const players = h('section', { class: 'panel', id: 'sec-pl' }, h('h2', { text: 'Pasajeros' }), playerChips());
+  const players = h('section', { class: 'panel', id: 'sec-pl' }, h('div', { class: 'ph' }, h('h2', { text: 'Marcador' }), h('span', { class: 'k', text: 'En vivo' })), scoreboardView());
   const usedList = S.used.slice().reverse();
   const used = h('section', { class: 'panel', id: 'sec-used' },
     h('div', { class: 'ph' }, h('h2', { text: 'Mi pasaporte' }), h('span', { class: 'k', text: usedN + ' sellos' })),
