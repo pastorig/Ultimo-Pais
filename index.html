@@ -2,7 +2,7 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@800;900&family=Special+Elite&family=Space+Mono:wght@400;700&family=Figtree:wght@400;600;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@800;900&family=Special+Elite&family=Figtree:wght@400;600;700;800&display=swap">
 <style>
 /* Concepto: control de pasaportes en un aeropuerto de noche.
    Tablero de salidas ámbar con letras que giran, pases de abordar para los jugadores,
@@ -25,7 +25,7 @@
   --cyan: #35D6E6;
   --f-board: 'Big Shoulders Display', 'Oswald', 'Arial Narrow', system-ui, sans-serif;
   --f-stamp: 'Special Elite', 'Courier New', monospace;
-  --f-mono: 'Space Mono', ui-monospace, Menlo, Consolas, monospace;
+  --f-mono: 'Figtree', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --f-body: 'Figtree', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --f-emoji: 'Twemoji Country Flags', 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif;
 }
@@ -782,6 +782,20 @@ body { font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased; 
   .pgate .gcode { gap: 4px; }
   .pgate .gact .btn { min-height: 40px; font-size: 15px; }
 }
+/* ===== Pulido profesional: 2 tipografías, un acento, menos ruido ===== */
+:root { --r-s: 10px; --r-m: 16px; --sp-1: 8px; --sp-2: 12px; --sp-3: 16px; }
+.mtitle, .chip-st, .room, .sound, .pgate .gtop, .sub, .lbl, label { letter-spacing: .08em; font-weight: 700; }
+.mtitle { font-family: var(--f-board); font-weight: 900; letter-spacing: .08em; font-size: 20px; }
+h2 { font-family: var(--f-board); letter-spacing: .02em; }
+h2::after { height: 3px; width: 28px; margin-top: 6px; background: var(--amber); opacity: .9; }
+#bgfx .aurora { opacity: .28; animation: none !important; }
+.pgate::before { height: 3px; background: var(--amber); }
+.tix, .pre, .card, .panel, section, .pgate { border-radius: var(--r-m); }
+.btn { border-radius: var(--r-s); }
+.btn:not(.ghost):not(.primary):active { transform: scale(.98); }
+.screen-in { animation: sin .28s ease-out both; }
+@keyframes sin { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@media (max-width: 559px) { .hdr:not(.mini) .mt-lobby { font-size: 26px; letter-spacing: .05em; } }
 /* Rendimiento */
 .cd { position: fixed; inset: 0; z-index: 57; display: grid; place-content: center; justify-items: center; gap: 10px; text-align: center; background: rgba(5, 7, 13, .82); }
 .cd-n { font-family: var(--f-board); font-weight: 900; font-size: clamp(120px, 38vw, 260px); line-height: .9; color: var(--amber); text-shadow: 0 0 50px rgba(255, 176, 0, .6); }
