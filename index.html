@@ -3756,7 +3756,17 @@ function setState(next) {
       }
     }
   }
+  maybeWipe();
   render();
+}
+/* Borrado único del historial (ranking, últimas partidas y récord del día) */
+const RESET_EPOCH = 2;
+let wiping = false;
+function maybeWipe() {
+  if (wiping || !stateRef || !connected || S.phase !== 'lobby' || (S.epoch || 0) >= RESET_EPOCH) return;
+  wiping = true;
+  mutate(s => { if (s.phase !== 'lobby' || (s.epoch || 0) >= RESET_EPOCH) return null; s.wins = {}; s.hist = []; s.daily = {}; s.epoch = RESET_EPOCH; return { state: s }; })
+    .catch(() => {}).finally(() => { wiping = false; });
 }
 
 let chain = Promise.resolve();
@@ -3808,6 +3818,9 @@ function actAddManual(name) {
   dbDo(() => playersRef.doc('m' + Math.random().toString(36).slice(2, 9)).set({ name, at: nowS(), manual: true }));
 }
 function actRemove(id) { dbDo(() => playersRef.doc(id).delete()); }
+function actClearHistory() {
+  run(s => { if (s.phase === 'playing') return null; s.wins = {}; s.hist = []; s.daily = {}; s.epoch = Math.max(s.epoch || 0, RESET_EPOCH); return { state: s }; });
+}
 function actPreset(cfg) { run(s => { if (s.phase !== 'lobby') return null; Object.assign(s.config, cfg); return { state: s }; }); }
 function actInvite() {
   const url = location.href.split('#')[0];
@@ -3932,7 +3945,7 @@ function actTimeout(expectSeq) {
 }
 function actReset() {
   confirmAct = null;
-  run(s => ({ state: { ...defaultState(), config: s.config, hist: s.hist || [], wins: s.wins || {}, daily: s.daily || {}, seq: s.seq } }));
+  run(s => ({ state: { ...defaultState(), config: s.config, epoch: s.epoch, hist: s.hist || [], wins: s.wins || {}, daily: s.daily || {}, seq: s.seq } }));
 }
 
 /* Pantalla encendida mientras se juega */
@@ -4175,7 +4188,7 @@ function lobbyView() {
   const stack = P.slice(0, 5).map((p, i) => avatar(p.name, i, 30, p.fl));
   return h('div', { class: 'stack enter cols', id: 'view-lobby' },
     h('div', { class: 'colL stack' }, gateView(), crewView()),
-    h('div', { class: 'colR stack' }, plan,
+    h('div', { class: 'colR stack' }, plan, rankingView(),
       h('details', { class: 'panel', id: 'sec-how' }, h('summary', { text: 'Cómo se juega' }),
         h('ul', {},
           h('li', { text: 'El orden de los turnos se sortea.' }),
@@ -4194,15 +4207,20 @@ function dailyHint() {
   const base = `Hoy: ${CATS[di.cat].n}${di.letter ? ', letra ' + di.letter : ''}`;
   return d.day === today && d.best ? `${base}. Récord: ${d.best} países` : base;
 }
+let confirmClear = false;
 function rankingView() {
   const w = Object.values(S.wins || {}).filter(x => x && x.w).sort((a, b) => b.w - a.w);
   const hs = (S.hist || []).slice(0, 5);
   if (!w.length && !hs.length) return null;
+  const clr = S.phase === 'lobby' ? (confirmClear
+    ? h('div', { class: 'row clrrow', id: 'clr-row' }, h('button', { class: 'btn danger solid', id: 'clr-yes', onclick: () => { confirmClear = false; actClearHistory(); } }, 'Sí, borrar todo'), h('button', { class: 'btn', onclick: () => { confirmClear = false; render(); } }, 'Cancelar'))
+    : h('button', { class: 'btn ghost', id: 'clr-btn', style: 'justify-self:start;padding-inline:0', onclick: () => { confirmClear = true; render(); } }, 'Borrar historial')) : null;
   const ago = t => { const m = Math.max(0, Math.round((nowS() - t) / 60000)); return m < 2 ? 'recién' : m < 60 ? 'hace ' + m + ' min' : m < 1440 ? 'hace ' + Math.round(m / 60) + ' h' : 'hace ' + Math.round(m / 1440) + ' d'; };
   return h('section', { class: 'panel', id: 'sec-rank' }, h('div', { class: 'ph' }, h('h2', { text: 'Ranking' }), h('span', { class: 'k', text: 'Partidas ganadas' })),
     h('ol', { class: 'rank' }, w.slice(0, 8).map((x, i) => h('li', { id: 'rk-' + i }, h('span', { class: 'rpos', text: String(i + 1) }), h('span', { class: 'rn', text: x.n }), h('span', { class: 'rw', text: x.w + (x.w === 1 ? ' victoria' : ' victorias') })))),
     hs.length ? h('div', { class: 'histbox', id: 'hist' }, h('div', { class: 'k', text: 'Últimas partidas' }),
-      h('ul', { class: 'hist' }, hs.map((x, i) => h('li', { id: 'hs-' + i }, h('span', { class: 'hw', text: '🏆 ' + x.w }), h('span', { class: 'hm', text: x.n + ' países · ' + x.r + (x.r === 1 ? ' ronda' : ' rondas') }), h('span', { class: 'ht', text: ago(x.t) }))))) : null);
+      h('ul', { class: 'hist' }, hs.map((x, i) => h('li', { id: 'hs-' + i }, h('span', { class: 'hw', text: '🏆 ' + x.w }), h('span', { class: 'hm', text: x.n + ' países · ' + x.r + (x.r === 1 ? ' ronda' : ' rondas') }), h('span', { class: 'ht', text: ago(x.t) }))))) : null,
+    clr);
 }
 function scoreboardView() {
   const cnt = p => S.used.filter(u => u.ci === p.ci).length;
@@ -4398,6 +4416,7 @@ function overView() {
       h('div', { class: 'stack ' + on('data'), id: 'sec-data' },
         statsView(),
         h('section', { class: 'panel', id: 'sec-pl' }, h('h2', { text: 'Marcador final' }), scoreboardView()),
+        rankingView(),
         h('section', { class: 'panel', id: 'sec-log' }, h('h2', { text: 'Cómo terminó' }),
           h('ul', { class: 'log' }, S.log.slice(-12).reverse().map(l => h('li', { id: 'lg-' + l.i, class: l.k }, h('span', { class: 'r', text: 'R' + l.r }), l.t)))))));
 }
