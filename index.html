@@ -744,6 +744,35 @@ body { font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased; 
   .bfoot .bst { display: none; } .bfoot .react { flex: 1; justify-content: space-between; } .bfoot .react button { flex: 1; width: auto; }
   .jokers { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
+
+/* ===== Móvil: sala más corta ===== */
+.sumrow { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.mt-lobby { display: none; }
+@media (max-width: 559px) {
+  .hdr:not(.mini) .mt-lobby { display: inline; }
+  .hdr:not(.mini) .title, .hdr:not(.mini) .sub, #ticker { display: none; }
+  .hdr:not(.mini) .hbar { flex-wrap: nowrap; gap: 8px; }
+  .hdr:not(.mini) .chip-st, .hdr:not(.mini) .room, .hdr:not(.mini) .sound { white-space: nowrap; font-size: 10px; padding: 4px 8px; }
+  .hdr:not(.mini) .room { display: none; }
+  .pgate { padding: 10px 12px 12px; gap: 9px; }
+  .pgate .gtop { padding-top: 6px; }
+  .gact .btn { min-height: 46px; }
+  .crew, .plan { gap: 9px; }
+  .crew h2, .plan h2 { font-size: 26px; }
+  .tix { min-height: 60px; }
+  .tix .tnm { font-size: 22px; }
+  .addrow input { padding: 10px 12px; font-size: 16px; }
+  .addrow .btn { min-height: 44px; }
+  .pre { min-height: 0; padding: 9px 9px 10px; gap: 2px; }
+  .pre .pic { width: 30px; height: 30px; margin-bottom: 2px; } .pre .pic svg { width: 18px; height: 18px; }
+  .pre .pn { font-size: 20px; } .pre .ps { font-size: 11.5px; }
+  .custbtn { min-height: 36px; padding: 4px 0; font-size: 14px; }
+  #sec-rank { padding: 12px; gap: 8px; }
+  #sec-rank .histbox { display: none; }
+  #sec-rank h2 { font-size: 22px; }
+  #sec-rank .rank li { padding: 6px 10px; }
+  #sec-how { padding: 12px 14px; }
+}
 /* Rendimiento */
 .cd { position: fixed; inset: 0; z-index: 57; display: grid; place-content: center; justify-items: center; gap: 10px; text-align: center; background: rgba(5, 7, 13, .82); }
 .cd-n { font-family: var(--f-board); font-weight: 900; font-size: clamp(120px, 38vw, 260px); line-height: .9; color: var(--amber); text-shadow: 0 0 50px rgba(255, 176, 0, .6); }
@@ -4044,7 +4073,7 @@ function headerView() {
       h('span', { class: 'grow' }),
       h('button', { class: 'sound', 'aria-pressed': String(!muted), onclick: toggleMute, text: muted ? '🔇' : '🔊' })));
   return h('header', { class: 'hdr' + (S.phase === 'playing' ? ' compact' : '') },
-    h('div', { class: 'hbar' }, h('span', { class: 'chip-st', text: phase }), standalone ? h('span', { class: 'room', text: 'Sala · ' + ROOM }) : null,
+    h('div', { class: 'hbar' }, h('span', { class: 'mtitle mt-lobby', text: 'ÚLTIMO PAÍS ✈' }), h('span', { class: 'chip-st', text: phase }), standalone ? h('span', { class: 'room', text: 'Sala · ' + ROOM }) : null,
       h('span', { class: 'grow' }),
       h('button', { class: 'sound', 'aria-pressed': String(!muted), onclick: toggleMute, text: muted ? 'Sonido: no' : 'Sonido: sí' })),
     titleView(),
@@ -4182,8 +4211,9 @@ function lobbyView() {
     h('div', { class: 'ph' }, h('h2', { text: 'Plan de vuelo' }), h('span', { class: 'cc', text: active ? active.n : 'Personalizado' })),
     h('div', { class: 'presets', id: 'presets' }, PRESETS.map(p => h('button', { id: 'pre-' + p.k, class: 'pre', 'aria-pressed': String(active === p), onclick: () => actPreset(p.cfg) },
       h('span', { class: 'pic', html: p.ic() }), h('span', { class: 'pn', text: p.n }), h('span', { class: 'ps', text: p.sub })))),
-    h('div', { class: 'summ', id: 'summ', text: `${cfg.perTurn} ${cfg.perTurn === 1 ? 'país' : 'países'} por turno · ${cfg.seconds} segundos` + (cfg.teams ? ` · ${cfg.teams} equipos` : '') }),
-    h('button', { class: 'btn ghost custbtn', id: 'cust-btn', 'aria-expanded': String(customOpen), onclick: () => { customOpen = !customOpen; render(); } }, customOpen ? 'Ocultar ajustes' : 'Personalizar reglas'),
+    h('div', { class: 'sumrow' },
+      h('div', { class: 'summ', id: 'summ', text: `${cfg.perTurn} ${cfg.perTurn === 1 ? 'país' : 'países'} · ${cfg.seconds} s` + (cfg.teams ? ` · ${cfg.teams} equipos` : '') }),
+      h('button', { class: 'btn ghost custbtn', id: 'cust-btn', 'aria-expanded': String(customOpen), onclick: () => { customOpen = !customOpen; render(); } }, customOpen ? 'Ocultar ajustes' : 'Personalizar')),
     custom);
   const stack = P.slice(0, 5).map((p, i) => avatar(p.name, i, 30, p.fl));
   return h('div', { class: 'stack enter cols', id: 'view-lobby' },
