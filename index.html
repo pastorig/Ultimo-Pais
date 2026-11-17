@@ -773,6 +773,15 @@ body { font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased; 
   #sec-rank .rank li { padding: 6px 10px; }
   #sec-how { padding: 12px 14px; }
 }
+/* título grande, sala chica (móvil) */
+@media (max-width: 559px) {
+  .hdr:not(.mini) .mt-lobby { font-size: 21px; letter-spacing: .06em; text-shadow: 0 0 18px rgba(255,176,0,.45); }
+  .hdr:not(.mini) .chip-st { display: none; }
+  .hdr:not(.mini) .hbar { padding-top: 6px; }
+  .pgate .gt { width: min(34px, calc((100cqw - (var(--n, 8) - 1) * 4px) / var(--n, 8))); font-size: min(33px, calc((100cqw - (var(--n, 8) - 1) * 4px) / var(--n, 8) * 1.15)); border-radius: 6px; }
+  .pgate .gcode { gap: 4px; }
+  .pgate .gact .btn { min-height: 40px; font-size: 15px; }
+}
 /* Rendimiento */
 .cd { position: fixed; inset: 0; z-index: 57; display: grid; place-content: center; justify-items: center; gap: 10px; text-align: center; background: rgba(5, 7, 13, .82); }
 .cd-n { font-family: var(--f-board); font-weight: 900; font-size: clamp(120px, 38vw, 260px); line-height: .9; color: var(--amber); text-shadow: 0 0 50px rgba(255, 176, 0, .6); }
